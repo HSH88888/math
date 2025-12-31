@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Master V11 - Test Mode</title>
+    <style>
+        /* [디자인 테마: Dark Neon Glass] */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            --panel-bg: rgba(255, 255, 255, 0.05);
+            --neon-blue: #00f2fe;
+            --neon-pink: #ff0055;
+            --neon-green: #00ff88;
+            --text-main: #ffffff;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .game-container {
+            width: 90%;
+            max-width: 480px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: var(--glass-border);
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            max-height: 98vh;
+            overflow-y: auto;
+        }
+        .game-container::-webkit-scrollbar { display: none; }
+
+        .info-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 10px; font-weight: bold; color: #ccc;
+        }
+        .timer {
+            font-family: 'Courier New', monospace;
+            color: var(--neon-green); font-size: 1.3rem; text-shadow: 0 0 5px var(--neon-green);
+        }
+
+        /* [문제 영역] */
+        .math-board {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .vertical-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .grid-item {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; font-weight: bold; height: 50px; color: #fff;
+        }
+
+        .line {
+            grid-column: 1 / -1;
+            height: 2px; background: #666; margin: 5px 0 10px 0;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        /* 입력창 스타일 */
+        input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid #444; color: white; text-align: center;
+            border-radius: 10px; outline: none; transition: all 0.2s; font-family: inherit;
+        }
+        input.active {
+            border-color: var(--neon-blue);
+            background: rgba(0, 242, 254, 0.15);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            transform: scale(1.05);
+        }
+
+        .carry-input {
+            width: 30px; height: 30px; font-size: 1rem;
+            border-radius: 50%; border: 1px solid #666; color: var(--neon-pink); margin: auto;
+        }
+
+        .final-cell {
+            width: 100%; height: 50px;
+            font-size: 1.8rem; font-weight: bold;
+            border: 2px solid #555;
+        }
+        
+        /* [단계별 풀이 영역] */
+        .step-wrapper {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px; padding: 10px;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .step-row {
+            display: flex; align-items: center; justify-content: center;
+            gap: 15px; font-size: 1.1rem; color: #aaa;
+        }
+        .step-input { width: 100px; height: 40px; font-size: 1.4rem; }
+        .highlight-num { color: var(--neon-blue); font-weight: bold; }
+
+        /* 다이얼 패드 */
+        .numpad {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: auto;
+        }
+        .key {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 15px; color: white; font-size: 1.5rem; height: 60px;
+            cursor: pointer; transition: background 0.1s;
+        }
+        .key:active { background: rgba(255,255,255,0.2); }
+        .key-submit { background: linear-gradient(135deg, var(--neon-blue), #2980b9); color: #000; font-weight: bold; border:none; }
+        .key-clear { color: var(--neon-pink); border-color: rgba(255, 0, 85, 0.3); }
+
+        /* 사용자 UI */
+        .user-interface {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 15px;
+            display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px;
+        }
+        .user-header { display: flex; justify-content: space-between; align-items: center; }
+        .user-display { font-size: 1.1rem; color: var(--neon-green); font-weight: bold; }
+        .login-btn { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; }
+        .user-input-area { display: flex; gap: 10px; }
+        .user-input-field { flex: 1; padding: 8px; font-size: 1rem; text-align: left; }
+
+        /* [결과 테이블 스타일] */
+        .result-table {
+            width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem;
+        }
+        .result-table th { color: #888; border-bottom: 1px solid #444; padding: 8px; }
+        .result-table td { padding: 8px; border-bottom: 1px solid #333; text-align: center; }
+        .res-o { color: var(--neon-green); font-weight: bold; }
+        .res-x { color: var(--neon-pink); font-weight: bold; }
+        .score-display { font-size: 2.5rem; color: var(--neon-blue); font-weight: bold; margin: 10px 0; text-shadow: 0 0 10px rgba(0,242,254,0.5); }
+
+        /* 유틸리티 */
+        .hidden { display: none !important; }
+        .mode-select { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; margin: 20px 0; text-align: left; }
+        .mode-label { display: block; margin: 15px 0; cursor: pointer; font-size: 1.1rem; }
+        input[type="radio"] { accent-color: var(--neon-blue); margin-right: 10px; transform: scale(1.2); }
+        .main-btn { width: 100%; padding: 15px; font-size: 1.3rem; border-radius: 50px; background: var(--neon-blue); border: none; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); }
+
+        /* 3D 큐브 */
+        .scene { width: 80px; height: 80px; perspective: 400px; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 100; pointer-events: none; }
+        .cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transform: translateZ(-40px); }
+        .cube.spin { animation: spinCube 2s infinite linear; }
+        .cube__face { position: absolute; width: 80px; height: 80px; border: 2px solid #fff; line-height: 80px; font-size: 24px; font-weight: bold; color: #000; background: var(--neon-blue); text-align: center; opacity: 0.9; }
+        .cube__face--front { transform: rotateY(0deg) translateZ(40px); } .cube__face--right { transform: rotateY(90deg) translateZ(40px); } .cube__face--back { transform: rotateY(180deg) translateZ(40px); } .cube__face--left { transform: rotateY(-90deg) translateZ(40px); } .cube__face--top { transform: rotateX(90deg) translateZ(40px); } .cube__face--bottom { transform: rotateX(-90deg) translateZ(40px); }
+        @keyframes spinCube { from { transform: translateZ(-40px) rotate3d(1, 1, 1, 0deg); } to { transform: translateZ(-40px) rotate3d(1, 1, 1, 360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="start-screen">
+        <div style="text-align: center; margin-top: 10px;">
+            <h1 style="margin:0; font-size: 3rem; text-shadow: 0 0 15px var(--neon-blue);">MATH V11</h1>
+            <p style="color:#aaa; margin-top: 5px;">Test Mode Edition</p>
+        </div>
+
+        <div class="user-interface">
+            <div class="user-header">
+                <span id="user-display" class="user-display">Guest Player</span>
+                <button class="login-btn" onclick="toggleUserLogin()">👤 사용자 등록/변경</button>
+            </div>
+            <div id="user-input-area" class="user-input-area hidden">
+                <input type="text" id="username-input" class="user-input-field" placeholder="이름 입력">
+                <button class="login-btn" style="background:var(--neon-blue); color:black;" onclick="loginUser()">확인</button>
+            </div>
+        </div>
+
+        <div class="mode-select" style="margin-top: 10px;">
+            <h3 style="color: var(--neon-blue); margin: 0 0 15px 0;">TRAINING MODE</h3>
+            <label class="mode-label">
+                <input type="radio" name="mode" value="normal"> 
+                ⚡ <b>스피드 모드</b> (바로 정답 입력)
+            </label>
+            <label class="mode-label">
+                <input type="radio" name="mode" value="step" checked> 
+                🐢 <b>단계별 풀기</b> (교육용 추천)
+                <div style="font-size: 0.9rem; color: #888; margin-top: 5px; margin-left: 28px;">
+                    1의 자리부터 순서대로 풀고<br>최종 정답 칸을 채웁니다.
+                </div>
+            </label>
+        </div>
+
+        <button class="main-btn" onclick="startGame()">MISSION START</button>
+    </div>
+
+    <div class="game-container hidden" id="game-screen">
+        <div class="info-bar">
+            <span>Q <span id="q-num" style="color: white;">1</span> / 10</span>
+            <span class="timer" id="timer">0.0</span>
+        </div>
+
+        <div class="math-board">
+            <div class="vertical-grid" id="main-grid"></div>
+        </div>
+
+        <div id="step-section" class="step-wrapper hidden"></div>
+
+        <div id="msg-box" style="height: 25px; text-align: center; color: var(--neon-pink); font-weight: bold; margin: 5px 0;"></div>
+
+        <div class="scene" id="scene">
+            <div class="cube" id="cube">
+                <div class="cube__face cube__face--front">GOOD</div>
+                <div class="cube__face cube__face--right">PERFECT</div>
+                <div class="cube__face cube__face--back">GREAT</div>
+                <div class="cube__face cube__face--left">NICE</div>
+                <div class="cube__face cube__face--top">WOW</div>
+                <div class="cube__face cube__face--bottom">SUPER</div>
+            </div>
+        </div>
+
+        <div class="numpad">
+            <button class="key" onclick="inputNum(7)">7</button>
+            <button class="key" onclick="inputNum(8)">8</button>
+            <button class="key" onclick="inputNum(9)">9</button>
+            <button class="key" onclick="inputNum(4)">4</button>
+            <button class="key" onclick="inputNum(5)">5</button>
+            <button class="key" onclick="inputNum(6)">6</button>
+            <button class="key" onclick="inputNum(1)">1</button>
+            <button class="key" onclick="inputNum(2)">2</button>
+            <button class="key" onclick="inputNum(3)">3</button>
+            <button class="key key-clear" onclick="clearInput()">C</button>
+            <button class="key" onclick="inputNum(0)">0</button>
+            <button class="key key-submit" onclick="submitCurrent()">ENTER</button>
+        </div>
+    </div>
+
+    <div class="game-container hidden" id="report-screen">
+        <h1 style="text-align: center; color: var(--neon-blue);">FINAL REPORT</h1>
+        
+        <div style="text-align: center;">
+            <div style="color:#aaa;">SCORE</div>
+            <div class="score-display" id="final-score">100점</div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border-radius: 15px; padding: 10px; max-height: 200px; overflow-y: auto;">
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th width="15%">No</th>
+                        <th width="35%">문제</th>
+                        <th width="30%">내답/정답</th>
+                        <th width="20%">결과</th>
+                    </tr>
+                </thead>
+                <tbody id="result-tbody">
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="cumulative-stats" class="hidden" style="margin-top: 15px; background:rgba(0,0,0,0.4); padding:10px; border-radius:15px; text-align:center; border:1px solid #555;">
+            <p style="margin:5px 0; font-size: 0.9rem;">누적 게임: <span id="total-games" style="color:var(--neon-green)">0</span>회 | 전체 평균: <span id="total-avg-speed" style="color:var(--neon-blue)">0</span>s</p>
+        </div>
+
+        <button class="main-btn" style="margin-top: 20px;" onclick="location.reload()">RETRY</button>
+    </div>
+
+    <script>
+        let qCount = 1;
+        const totalQ = 10;
+        let num1, num2;
+        let solveMode = 'step'; 
+        let activeInputId = null; 
+        let startTime, timerInterval;
+        let history = []; // 문제 풀이 기록 저장
+        let currentUser = null; 
+
+        // 사용자 입력창 토글
+        function toggleUserLogin() {
+            const area = document.getElementById('user-input-area');
+            if (area.classList.contains('hidden')) {
+                area.classList.remove('hidden');
+                document.getElementById('username-input').focus();
+            } else {
+                area.classList.add('hidden');
+            }
+        }
+
+        // 사용자 로그인/등록
+        function loginUser() {
+            const nameInput = document.getElementById('username-input');
+            const name = nameInput.value.trim();
+            if (name) {
+                let db = JSON.parse(localStorage.getItem('math_master_users')) || {};
+                if (!db[name]) {
+                    db[name] = { games: 0, totalTime: 0 };
+                    alert(`반갑습니다, ${name}님!`);
+                } else {
+                    alert(`${name}님, 환영합니다!`);
+                }
+                currentUser = { name: name, ...db[name] };
+                localStorage.setItem('math_master_users', JSON.stringify(db));
+                document.getElementById('user-display').innerText = `Player: ${name}`;
+                document.getElementById('user-display').style.color = 'var(--neon-pink)';
+                toggleUserLogin();
+            }
+        }
+
+        function startGame() {
+            const radios = document.getElementsByName('mode');
+            radios.forEach(r => { if(r.checked) solveMode = r.value; });
+            history = []; // 기록 초기화
+            qCount = 1;
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            startTime = Date.now();
+            startTimer();
+            nextProblem();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const t = (Date.now() - startTime) / 1000;
+                document.getElementById('timer').innerText = t.toFixed(1);
+            }, 100);
+        }
+
+        function nextProblem() {
+            if(qCount > totalQ) { endGame(); return; }
+
+            document.getElementById('q-num').innerText = qCount;
+            document.getElementById('msg-box').innerText = '';
+            document.getElementById('scene').style.display = 'none';
+            document.getElementById('cube').classList.remove('spin');
+
+            num1 = Math.floor(Math.random() * 900) + 100;
+            num2 = Math.floor(Math.random() * 8) + 2;
+
+            renderBoard();
+        }
+
+        function renderBoard() {
+            const grid = document.getElementById('main-grid');
+            grid.innerHTML = '';
+            const sNum1 = String(num1);
+
+            // Row 1 (Carry)
+            addCell(grid, ''); addCell(grid, '');
+            grid.appendChild(createCarryInput('carry-100'));
+            grid.appendChild(createCarryInput('carry-10'));
+            addCell(grid, '');
+
+            // Row 2 (Num1)
+            addCell(grid, ''); addCell(grid, '');
+            addCell(grid, sNum1[0]); addCell(grid, sNum1[1]); addCell(grid, sNum1[2]);
+
+            // Row 3 (Num2)
+            addCell(grid, '×', 'var(--neon-pink)'); addCell(grid, ''); addCell(grid, ''); addCell(grid, ''); addCell(grid, num2);
+
+            // Row 4 (Line)
+            const line = document.createElement('div'); line.className = 'line'; grid.appendChild(line);
+
+            // Row 5 (Inputs)
+            for (let i = 0; i < 5; i++) {
+                const input = document.createElement('input');
+                input.className = 'final-cell';
+                input.id = `final-cell-${i}`;
+                input.readOnly = true;
+                input.onclick = () => setFocus(`final-cell-${i}`);
+                grid.appendChild(input);
+            }
+
+            // Steps
+            const stepSection = document.getElementById('step-section');
+            stepSection.innerHTML = '';
+            if (solveMode === 'step') {
+                stepSection.classList.remove('hidden');
+                const digits = [sNum1[2], sNum1[1], sNum1[0]];
+                digits.forEach((d, idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'step-row';
+                    row.innerHTML = `<span class="highlight-num">${d}</span> × <span class="highlight-num">${num2}</span> = `;
+                    const input = document.createElement('input');
+                    input.className = 'step-input';
+                    input.id = `step-input-${idx}`;
+                    input.readOnly = true;
+                    input.onclick = () => setFocus(`step-input-${idx}`);
+                    row.appendChild(input);
+                    stepSection.appendChild(row);
+                });
+                setFocus('step-input-0');
+            } else {
+                stepSection.classList.add('hidden');
+                setFocus('final-cell-4');
+            }
+        }
+
+        function addCell(p, t, c) { const d = document.createElement('div'); d.className='grid-item'; d.innerText=t; if(c) d.style.color=c; p.appendChild(d); }
+        function createCarryInput(id) {
+            const w = document.createElement('div'); w.className='grid-item';
+            const i = document.createElement('input'); i.className='carry-input'; i.id=id; i.readOnly=true;
+            i.onclick=(e)=>{e.stopPropagation(); setFocus(id);}; w.appendChild(i); return w;
+        }
+
+        function setFocus(id) {
+            const prev = document.querySelector('.active'); if(prev) prev.classList.remove('active');
+            const target = document.getElementById(id); if(target) { target.classList.add('active'); activeInputId = id; }
+        }
+
+        function inputNum(n) {
+            if(!activeInputId) return;
+            const el = document.getElementById(activeInputId);
+            const isStep = activeInputId.includes('step');
+            const limit = isStep ? 3 : 1; 
+            if(el.value.length < limit) el.value += n;
+        }
+
+        function clearInput() { if(activeInputId) document.getElementById(activeInputId).value = ''; }
+
+        function submitCurrent() {
+            if(!activeInputId) return;
+            if(solveMode === 'step' && activeInputId.includes('step-input')) {
+                const currentIdx = parseInt(activeInputId.split('-')[2]);
+                if(currentIdx < 2) setFocus(`step-input-${currentIdx + 1}`);
+                else setFocus('final-cell-4');
+                return;
+            }
+            if(activeInputId.includes('final-cell')) checkFinalAnswer();
+        }
+
+        function checkFinalAnswer() {
+            let userStr = "";
+            for(let i=0; i<5; i++) userStr += document.getElementById(`final-cell-${i}`).value;
+            const userVal = parseInt(userStr);
+            const correctVal = num1 * num2;
+            const isCorrect = (!isNaN(userVal) && userVal === correctVal);
+
+            // 기록 저장
+            history.push({
+                q: `${num1} × ${num2}`,
+                user: isNaN(userVal) ? "-" : userVal,
+                ans: correctVal,
+                ok: isCorrect
+            });
+
+            if(isCorrect) {
+                // 정답: 효과 후 다음
+                document.getElementById('msg-box').innerText = "PERFECT!";
+                document.getElementById('scene').style.display = 'block';
+                document.getElementById('cube').classList.add('spin');
+                setTimeout(() => { qCount++; nextProblem(); }, 1200);
+            } else {
+                // 오답: Silent Pass (피드백 없이 즉시 이동)
+                qCount++;
+                nextProblem();
+            }
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('report-screen').classList.remove('hidden');
+            
+            const totalTime = parseFloat(document.getElementById('timer').innerText);
+            const correctCount = history.filter(h => h.ok).length;
+            const score = correctCount * 10;
+            
+            // 점수 표시
+            document.getElementById('final-score').innerText = score + "점";
+            
+            // 상세 결과 테이블 생성
+            const tbody = document.getElementById('result-tbody');
+            tbody.innerHTML = '';
+            history.forEach((h, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td>${h.q}</td>
+                    <td>${h.user} / ${h.ans}</td>
+                    <td>${h.ok ? '<span class="res-o">O</span>' : '<span class="res-x">X</span>'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // 누적 통계
+            if (currentUser) {
+                let db = JSON.parse(localStorage.getItem('math_master_users'));
+                db[currentUser.name].games += 1;
+                db[currentUser.name].totalTime += totalTime;
+                localStorage.setItem('math_master_users', JSON.stringify(db));
+
+                const totalGames = db[currentUser.name].games;
+                const totalAvg = (db[currentUser.name].totalTime / (totalGames * totalQ)).toFixed(1);
+
+                document.getElementById('cumulative-stats').classList.remove('hidden');
+                document.getElementById('total-games').innerText = totalGames;
+                document.getElementById('total-avg-speed').innerText = totalAvg;
+            } else {
+                document.getElementById('cumulative-stats').classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
