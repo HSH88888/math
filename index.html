@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Master V20</title>
+    <title>Math Master V22</title>
     <style>
         /* [테마: Deep Purple & Cyan] */
         :root {
@@ -43,103 +43,94 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
-            padding: 20px; /* 패딩 약간 축소 */
+            padding: 25px;
             position: relative;
-            overflow-y: auto; /* 내용이 길면 스크롤 */
+            overflow-y: auto;
         }
         .app-container::-webkit-scrollbar { display: none; }
 
-        /* [시작 화면] - 모바일 최적화 */
-        .title-area { text-align: center; margin-top: 20px; margin-bottom: 20px; }
-        .main-title { font-size: 2.5rem; font-weight: 900; color: white; text-shadow: 0 0 20px rgba(0, 242, 254, 0.6); margin: 0; }
-        .sub-title { color: var(--text-gray); margin-top: 5px; font-size: 0.9rem; }
+        /* [시작 화면] */
+        .title-area { text-align: center; margin-top: 30px; margin-bottom: 30px; }
+        .main-title { font-size: 3rem; font-weight: 900; color: white; text-shadow: 0 0 20px rgba(0, 242, 254, 0.6); margin: 0; }
+        .sub-title { color: var(--text-gray); margin-top: 5px; font-size: 1rem; }
 
-        .user-bar { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .user-name { font-weight: bold; color: var(--accent-cyan); font-size: 1rem; }
-        .btn-change { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; cursor: pointer; }
+        .user-bar { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .user-name { font-weight: bold; color: var(--accent-cyan); font-size: 1.1rem; }
+        .btn-change { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 20px; padding: 5px 15px; font-size: 0.8rem; cursor: pointer; }
 
-        .mode-box { background: rgba(0,0,0,0.25); border-radius: 16px; padding: 20px; margin-bottom: 10px; }
-        .box-title { color: var(--accent-cyan); font-weight: 800; margin-bottom: 15px; font-size: 0.95rem; letter-spacing: 1px; }
+        .mode-box { background: rgba(0,0,0,0.25); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .box-title { color: var(--accent-cyan); font-weight: 800; margin-bottom: 15px; font-size: 1rem; letter-spacing: 1px; }
         
         .radio-option { display: flex; align-items: flex-start; margin-bottom: 15px; cursor: pointer; }
-        .radio-option input { margin-top: 4px; margin-right: 12px; accent-color: var(--accent-cyan); transform: scale(1.2); }
-        .opt-title { font-size: 1rem; font-weight: bold; color: white; margin-bottom: 3px; }
-        .opt-desc { font-size: 0.85rem; color: var(--text-gray); line-height: 1.3; }
+        .radio-option input { margin-top: 5px; margin-right: 15px; accent-color: var(--accent-cyan); transform: scale(1.3); }
+        .opt-title { font-size: 1.1rem; font-weight: bold; color: white; margin-bottom: 4px; }
+        .opt-desc { font-size: 0.9rem; color: var(--text-gray); line-height: 1.4; }
 
-        /* 연산 선택 버튼 */
-        .op-select { margin-left: 30px; margin-bottom: 10px; display: flex; gap: 6px; }
+        /* 연산 버튼 */
+        .op-select { margin-left: 35px; margin-bottom: 10px; display: flex; gap: 8px; }
         .op-btn { 
-            width: 38px; height: 38px; 
+            width: 40px; height: 40px; 
             background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); 
-            color: white; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; 
+            color: white; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; 
             display: flex; align-items: center; justify-content: center;
         }
         .op-btn.selected { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); }
 
         /* 난이도 선택 */
-        .level-select { margin-left: 30px; margin-bottom: 20px; display: flex; gap: 6px; }
-        .lvl-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+        .level-select { margin-left: 35px; margin-bottom: 20px; display: flex; gap: 8px; }
+        .lvl-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
         .lvl-btn.selected { background: var(--accent-purple); color: white; border-color: var(--accent-purple); font-weight: bold; }
 
-        /* [수정됨] 시작 버튼 위치: 하단 고정 해제 및 간격 조정 */
-        .btn-start { 
-            width: 100%; 
-            padding: 16px; 
-            border-radius: 30px; 
-            background: var(--accent-cyan); 
-            color: #000; 
-            font-size: 1.2rem; 
-            font-weight: 900; 
-            border: none; 
-            cursor: pointer; 
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); 
-            margin-top: 20px; /* 요청하신대로 20px로 변경 (auto 제거) */
-            margin-bottom: 20px; 
-        }
+        .btn-start { width: 100%; padding: 18px; border-radius: 30px; background: var(--accent-cyan); color: #000; font-size: 1.3rem; font-weight: 900; border: none; cursor: pointer; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); margin-top: 20px; margin-bottom: 10px; }
 
         /* [게임 화면] */
-        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: 15px; }
-        .header-left { display: flex; align-items: center; gap: 10px; }
-        .btn-home { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; padding: 0; margin-right: 5px; }
-        .q-count { color: white; font-weight: bold; font-size: 1.1rem; }
-        .timer { color: var(--accent-cyan); font-weight: bold; font-size: 1.4rem; font-family: monospace; }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: 20px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-home { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; margin-right: 5px; }
+        .q-count { color: white; font-weight: bold; font-size: 1.2rem; }
+        .timer { color: var(--accent-cyan); font-weight: bold; font-size: 1.5rem; font-family: monospace; }
 
         /* 문제 카드 */
         .problem-card { 
-            background: #231f38; border-radius: 20px; padding: 20px; min-height: 160px; 
+            background: #231f38; border-radius: 20px; padding: 20px; min-height: 180px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 15px; position: relative; 
         }
-        .speed-text { font-size: 3.2rem; font-weight: bold; margin-bottom: 5px; line-height: 1; }
-        .speed-op { color: #ff3b30; margin: 0 10px; }
+        .speed-text { font-size: 3.5rem; font-weight: bold; margin-bottom: 5px; line-height: 1; }
+        .speed-op { color: #ff3b30; margin: 0 15px; }
 
+        /* 스피드모드 입력 영역 */
         .speed-input-area { width: 100%; display: flex; justify-content: center; margin-top: 10px; } 
 
         /* 단계별 풀이 */
-        .step-container { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 10px; }
-        .step-row { display: flex; align-items: center; gap: 8px; font-size: 1rem; color: #ccc; }
-        .step-input { width: 70px; height: 35px; background: rgba(255,255,255,0.1); border: 2px solid #555; border-radius: 8px; text-align: center; color: white; font-size: 1.1rem; font-weight: bold; outline: none; }
+        .step-container { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .step-row { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: #ccc; }
+        .step-input { width: 80px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid #555; border-radius: 10px; text-align: center; color: white; font-size: 1.2rem; font-weight: bold; outline: none; }
         .step-input.active { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); }
 
         /* 세로식 그리드 */
         .v-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; width: 100%; max-width: 300px; }
-        .v-cell { height: 45px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: white; }
+        .v-cell { height: 50px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: white; }
         .v-line { grid-column: 1/-1; height: 2px; background: #666; margin: 5px 0; }
-        .carry-circle { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #666; color: #ff3b30; display:flex; align-items:center; justify-content:center; font-size:0.9rem; margin:auto;}
+        .carry-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #666; color: #ff3b30; display:flex; align-items:center; justify-content:center; font-size:1rem; margin:auto;}
 
-        .final-cell-wrapper { padding: 3px; }
-        .final-input { width: 100%; height: 50px; background: rgba(255,255,255,0.1); border: 2px solid #555; border-radius: 12px; color: white; text-align: center; font-size: 1.6rem; font-weight: bold; }
+        .final-cell-wrapper { padding: 4px; }
+        .final-input { width: 100%; height: 55px; background: rgba(255,255,255,0.1); border: 2px solid #555; border-radius: 12px; color: white; text-align: center; font-size: 1.8rem; font-weight: bold; }
         .final-input.active { border-color: var(--accent-cyan); }
 
-        /* [키패드] - 문제 바로 아래 위치 */
-        .numpad { display: flex; gap: 4px; margin-top: 20px; width: 100%; margin-bottom: 20px; }
-        .key { flex: 1; height: 50px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; font-size: 1.3rem; font-weight: bold; cursor: pointer; }
+        /* 키패드 */
+        .numpad { display: flex; gap: 5px; margin-top: 20px; width: 100%; margin-bottom: 20px; }
+        .key { flex: 1; height: 55px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; font-size: 1.4rem; font-weight: bold; cursor: pointer; }
         .key:active { background: rgba(255,255,255,0.3); }
         .key-ent { flex: 1.5; background: var(--accent-cyan); color: #000; }
         .key-del { flex: 1.2; color: #ff3b30; }
 
+        /* 메시지 박스 (정답 텍스트용) */
+        .msg-box { height: 30px; text-align: center; font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; min-height: 30px;}
+
+        /* 결과 화면 */
         .result-screen { display: none; text-align: center; }
-        .score-big { font-size: 3.5rem; color: var(--accent-cyan); font-weight: bold; margin: 20px 0; text-shadow: 0 0 20px var(--accent-cyan); }
+        .score-big { font-size: 4rem; color: var(--accent-cyan); font-weight: bold; margin: 20px 0; text-shadow: 0 0 20px var(--accent-cyan); }
         .res-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; text-align: left; }
         .res-table th { color: #888; padding: 10px; border-bottom: 1px solid #444; }
         .res-table td { padding: 10px; border-bottom: 1px solid #333; }
@@ -148,26 +139,33 @@
         .modal { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:100; }
         .modal-box { background: #2b2742; padding: 20px; border-radius: 16px; width: 80%; }
         
-        /* 3D 큐브 */
-        .scene { width: 60px; height: 60px; perspective: 400px; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 100; pointer-events: none; }
-        .cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transform: translateZ(-30px); }
-        .cube.spin { animation: spinCube 2s infinite linear; }
-        .cube__face { position: absolute; width: 60px; height: 60px; border: 2px solid #fff; line-height: 60px; font-size: 20px; font-weight: bold; color: #000; background: var(--accent-cyan); text-align: center; opacity: 0.9; }
-        .cube__face--front { transform: rotateY(0deg) translateZ(30px); } .cube__face--right { transform: rotateY(90deg) translateZ(30px); } .cube__face--back { transform: rotateY(180deg) translateZ(30px); } .cube__face--left { transform: rotateY(-90deg) translateZ(30px); } .cube__face--top { transform: rotateX(90deg) translateZ(30px); } .cube__face--bottom { transform: rotateX(-90deg) translateZ(30px); }
-        @keyframes spinCube { from { transform: translateZ(-30px) rotate3d(1, 1, 1, 0deg); } to { transform: translateZ(-30px) rotate3d(1, 1, 1, 360deg); } }
+        .user-list { margin: 15px 0; max-height: 200px; overflow-y: auto; }
+        .user-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; cursor: pointer; border: 1px solid transparent;
+        }
+        .user-item.active { border-color: var(--accent-cyan); background: rgba(0, 242, 254, 0.1); }
+        .user-item:active { transform: scale(0.98); }
+        .del-user-btn { color: #ff3b30; padding: 5px 10px; border: none; background: transparent; font-size: 1.2rem; cursor: pointer; }
+
+        .new-user-form { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .modal-input { flex: 1; padding: 12px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 1rem; }
+        .modal-btn { padding: 0 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-add { background: var(--accent-cyan); color: black; }
+        .btn-close { width: 100%; padding: 12px; background: #444; color: white; border:none; border-radius:10px; margin-top:10px; font-weight:bold; cursor:pointer;}
     </style>
 </head>
 <body>
 
     <div class="app-container" id="screen-start">
         <div class="title-area">
-            <h1 class="main-title">MATH V20</h1>
-            <div class="sub-title">Mobile Optimized Edition</div>
+            <h1 class="main-title">MATH V22</h1>
+            <div class="sub-title">Clean & Fast Edition</div>
         </div>
 
         <div class="user-bar">
             <span class="user-name" id="display-user">Guest Player</span>
-            <button class="btn-change" onclick="showLogin()">사용자 등록/변경</button>
+            <button class="btn-change" onclick="openUserModal()">사용자 변경</button>
         </div>
 
         <div class="mode-box">
@@ -219,14 +217,12 @@
 
         <div class="problem-card">
             <div id="problem-area" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
-            
-            <div id="speed-input-container" class="speed-input-area hidden">
-                </div>
+            <div id="speed-input-container" class="speed-input-area hidden"></div>
         </div>
 
         <div id="bottom-area"></div>
 
-        <div id="msg-box" style="height:20px; text-align:center; color:#ff3b30; font-weight:bold; margin-bottom:5px;"></div>
+        <div id="msg-box" class="msg-box"></div>
 
         <div class="numpad">
             <button class="key" onclick="inputKey(1)">1</button>
@@ -241,13 +237,6 @@
             <button class="key" onclick="inputKey(0)">0</button>
             <button class="key key-del" onclick="delKey()">C</button>
             <button class="key key-ent" onclick="submitAns()">OK</button>
-        </div>
-
-        <div class="scene" id="scene">
-            <div class="cube" id="cube">
-                <div class="cube__face cube__face--front">GOOD</div><div class="cube__face cube__face--right">NICE</div><div class="cube__face cube__face--back">GREAT</div>
-                <div class="cube__face cube__face--left">COOL</div><div class="cube__face cube__face--top">WOW</div><div class="cube__face cube__face--bottom">YES</div>
-            </div>
         </div>
     </div>
 
@@ -270,27 +259,28 @@
 
     <div id="modal-login" class="modal hidden">
         <div class="modal-box">
-            <h3 style="color:white;">사용자 이름 입력</h3>
-            <input type="text" id="inp-name" style="width:100%; padding:10px; margin:15px 0; font-size:1.1rem;">
-            <div style="display:flex; gap:10px;">
-                <button onclick="saveUser()" style="flex:1; padding:10px; background:var(--accent-cyan); border:none; border-radius:8px; font-weight:bold;">확인</button>
-                <button onclick="document.getElementById('modal-login').classList.add('hidden')" style="flex:1; padding:10px; background:#555; border:none; border-radius:8px; color:white;">취소</button>
+            <h3 style="color:var(--accent-cyan); margin-bottom:15px;">사용자 선택</h3>
+            <div id="user-list" class="user-list"></div>
+            <div class="new-user-form">
+                <input type="text" id="inp-name" class="modal-input" placeholder="새 사용자 이름">
+                <button onclick="registerNewUser()" class="modal-btn btn-add">추가</button>
             </div>
+            <button onclick="closeUserModal()" class="btn-close">닫기</button>
         </div>
     </div>
 
     <script>
         // 데이터
-        let mode = 'speed'; // speed, step
-        let difficulty = 2; // 1~4
-        let speedOpType = 'random'; // +, -, *, /, random
+        let mode = 'speed'; 
+        let difficulty = 2; 
+        let speedOpType = 'random'; 
         let qNum = 1;
         const totalQ = 10;
         let num1, num2, op, ans;
         let activeId = null;
         let history = [];
         let startTime, timerInt;
-        let user = null;
+        let currentUser = null;
 
         // UI 제어
         function toggleOptions(m) { 
@@ -310,22 +300,69 @@
             document.getElementById(btnId).classList.add('selected');
         }
 
-        function showLogin() { document.getElementById('modal-login').classList.remove('hidden'); }
-        function goHome() { if(confirm("게임을 종료하고 홈으로 돌아가시겠습니까?")) location.reload(); }
-        
-        function saveUser() {
-            const nm = document.getElementById('inp-name').value.trim();
-            if(nm) {
-                let db = JSON.parse(localStorage.getItem('mm_v20') || '{}');
-                if(!db[nm]) db[nm] = { games:0, time:0 };
-                user = { name:nm, data:db[nm] };
-                localStorage.setItem('mm_v20', JSON.stringify(db));
-                document.getElementById('display-user').innerText = nm;
-                document.getElementById('modal-login').classList.add('hidden');
-            }
+        // 사용자 관리
+        function openUserModal() { renderUserList(); document.getElementById('modal-login').classList.remove('hidden'); }
+        function closeUserModal() { document.getElementById('modal-login').classList.add('hidden'); }
+
+        function renderUserList() {
+            const list = document.getElementById('user-list');
+            list.innerHTML = '';
+            const db = JSON.parse(localStorage.getItem('mm_v21_db') || '{}');
+            const names = Object.keys(db);
+
+            const guestDiv = document.createElement('div');
+            guestDiv.className = `user-item ${currentUser === null ? 'active' : ''}`;
+            guestDiv.innerHTML = `<span style="font-weight:bold;">Guest Player</span>`;
+            guestDiv.onclick = () => selectUser(null);
+            list.appendChild(guestDiv);
+
+            names.forEach(name => {
+                const div = document.createElement('div');
+                div.className = `user-item ${currentUser && currentUser.name === name ? 'active' : ''}`;
+                div.innerHTML = `<span>${name} <span style="font-size:0.8rem; color:#aaa;">(${db[name].games}판)</span></span><button class="del-user-btn" onclick="deleteUser('${name}', event)">×</button>`;
+                div.onclick = (e) => { if(e.target.tagName === 'BUTTON') return; selectUser(name); };
+                list.appendChild(div);
+            });
         }
 
-        // 게임 시작
+        function registerNewUser() {
+            const nm = document.getElementById('inp-name').value.trim();
+            if(!nm) return;
+            let db = JSON.parse(localStorage.getItem('mm_v21_db') || '{}');
+            if(db[nm]) { alert('이미 존재하는 이름입니다.'); return; }
+            db[nm] = { games: 0, time: 0 };
+            localStorage.setItem('mm_v21_db', JSON.stringify(db));
+            document.getElementById('inp-name').value = '';
+            renderUserList();
+        }
+
+        function deleteUser(name, e) {
+            e.stopPropagation();
+            if(!confirm(`'${name}' 사용자를 삭제하시겠습니까?`)) return;
+            let db = JSON.parse(localStorage.getItem('mm_v21_db') || '{}');
+            delete db[name];
+            localStorage.setItem('mm_v21_db', JSON.stringify(db));
+            if(currentUser && currentUser.name === name) selectUser(null);
+            renderUserList();
+        }
+
+        function selectUser(name) {
+            if(name === null) {
+                currentUser = null;
+                document.getElementById('display-user').innerText = "Guest Player";
+                document.getElementById('display-user').style.color = "white";
+            } else {
+                let db = JSON.parse(localStorage.getItem('mm_v21_db') || '{}');
+                currentUser = { name: name, data: db[name] };
+                document.getElementById('display-user').innerText = name;
+                document.getElementById('display-user').style.color = "var(--accent-cyan)";
+            }
+            closeUserModal();
+        }
+
+        function goHome() { if(confirm("게임을 종료하고 홈으로 돌아가시겠습니까?")) location.reload(); }
+
+        // 게임 로직
         function startGame() {
             document.getElementById('screen-start').classList.add('hidden');
             document.getElementById('screen-game').classList.remove('hidden');
@@ -351,24 +388,15 @@
                 if(speedOpType === 'random') {
                     const ops = ['+','-','*','/'];
                     op = ops[Math.floor(Math.random()*ops.length)];
-                } else {
-                    op = speedOpType;
-                }
+                } else { op = speedOpType; }
 
                 let min=1, max=9;
                 if(difficulty === 2) { min=10; max=99; }
                 if(difficulty === 3) { min=10; max=99; }
                 if(difficulty === 4) { min=100; max=999; }
 
-                if(op === '+') { 
-                    num1 = rand(min, max); num2 = rand(min, max); 
-                    ans = num1 + num2; 
-                } 
-                else if(op === '-') { 
-                    num1 = rand(min, max); num2 = rand(min, max); 
-                    if(num1 < num2) [num1, num2] = [num2, num1]; 
-                    ans = num1 - num2; 
-                } 
+                if(op === '+') { num1 = rand(min, max); num2 = rand(min, max); ans = num1 + num2; } 
+                else if(op === '-') { num1 = rand(min, max); num2 = rand(min, max); if(num1 < num2) [num1, num2] = [num2, num1]; ans = num1 - num2; } 
                 else if(op === '*') { 
                     let m1 = difficulty > 2 ? 99 : 9; 
                     if(difficulty === 4) m1 = 99; 
@@ -400,7 +428,6 @@
             if(mode === 'speed') {
                 let sym = op==='*'?'×':(op==='/'?'÷':op);
                 pArea.innerHTML = `<div class="speed-text">${num1}<span class="speed-op">${sym}</span>${num2}</div>`;
-                
                 sInputArea.classList.remove('hidden');
                 sInputArea.innerHTML = `<input id="ans-speed" class="final-input active" style="max-width:200px; height:60px; font-size:2.5rem;" readonly onclick="focusId('ans-speed')">`;
                 activeId = 'ans-speed';
@@ -411,10 +438,7 @@
                 html += `<div></div><div></div><div class="v-cell">${s1[0]}</div><div class="v-cell">${s1[1]}</div><div class="v-cell">${s1[2]}</div>`;
                 html += `<div class="v-cell" style="color:#ff3b30">×</div><div></div><div></div><div></div><div class="v-cell">${num2}</div>`;
                 html += `<div class="v-line"></div>`;
-                
-                for(let i=0; i<5; i++) { 
-                    html += `<div class="final-cell-wrapper"><input id="ans-${i}" class="final-input" readonly onclick="focusId('ans-${i}')"></div>`; 
-                }
+                for(let i=0; i<5; i++) { html += `<div class="final-cell-wrapper"><input id="ans-${i}" class="final-input" readonly onclick="focusId('ans-${i}')"></div>`; }
                 html += `</div>`;
                 pArea.innerHTML = html;
 
@@ -425,7 +449,6 @@
                 });
                 stepHtml += `</div>`;
                 bArea.innerHTML = stepHtml;
-                
                 focusId('step-0');
             }
         }
@@ -451,15 +474,12 @@
 
         function submitAns() {
             if(!activeId) return;
-            
             if(activeId.startsWith('step')) {
                 const idx = parseInt(activeId.split('-')[1]);
                 const next = `step-${idx+1}`;
-                if(document.getElementById(next)) focusId(next); 
-                else focusId('ans-4');
+                if(document.getElementById(next)) focusId(next); else focusId('ans-4');
                 return;
             }
-            
             let uVal;
             if(mode === 'speed') { uVal = parseInt(document.getElementById('ans-speed').value); } 
             else { let s = ""; for(let i=0; i<5; i++) { const e = document.getElementById(`ans-${i}`); if(e) s += e.value; } uVal = parseInt(s); }
@@ -468,7 +488,11 @@
             const ok = (uVal === ans);
             history.push({ q:`${num1} ${op} ${num2}`, a:ans, u:uVal, ok:ok });
 
-            if(ok) { document.getElementById('msg-box').innerText = "Perfect!"; document.getElementById('scene').style.display = 'block'; document.getElementById('cube').classList.add('spin'); setTimeout(()=>{ qNum++; nextQ(); }, 500); } 
+            if(ok) { 
+                document.getElementById('msg-box').innerText = "정답!";
+                document.getElementById('msg-box').style.color = "#00ff88"; 
+                setTimeout(()=>{ qNum++; nextQ(); }, 800); 
+            } 
             else { qNum++; nextQ(); }
         }
 
@@ -481,12 +505,12 @@
             const tbody = document.getElementById('res-tbody'); tbody.innerHTML = '';
             history.forEach((h, i) => {
                 let qStr = h.q.replace('*','×').replace('/','÷');
-                tbody.innerHTML += `<tr><td>${i+1}</td><td>${qStr}</td><td>${h.a}</td><td style="color:${h.ok?'var(--accent-green)':'#ff3b30'}">${h.ok?'O':'X'}</td></tr>`;
+                tbody.innerHTML += `<tr><td>${i+1}</td><td>${qStr}</td><td>${h.a}</td><td style="color:${h.ok?'var(--accent-cyan)':'#ff3b30'}">${h.ok?'O':'X'}</td></tr>`;
             });
             if(user) {
-                let db = JSON.parse(localStorage.getItem('mm_v20'));
+                let db = JSON.parse(localStorage.getItem('mm_v21_db'));
                 db[user.name].games++;
-                localStorage.setItem('mm_v20', JSON.stringify(db));
+                localStorage.setItem('mm_v21_db', JSON.stringify(db));
                 document.getElementById('total-games').innerText = db[user.name].games;
             }
         }
