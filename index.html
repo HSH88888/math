@@ -3,23 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Master V11 - Test Mode</title>
+    <title>Math Master V20</title>
     <style>
-        /* [디자인 테마: Dark Neon Glass] */
+        /* [테마: Deep Purple & Cyan] */
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            --panel-bg: rgba(255, 255, 255, 0.05);
-            --neon-blue: #00f2fe;
-            --neon-pink: #ff0055;
-            --neon-green: #00ff88;
-            --text-main: #ffffff;
-            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --bg-color: #2b2742; 
+            --card-bg: #1e1b33;
+            --accent-cyan: #00f2fe; 
+            --accent-purple: #5e5ce6;
+            --text-white: #ffffff;
+            --text-gray: #a0a0b0;
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --border-radius: 16px;
+            --font-main: 'Segoe UI', Roboto, sans-serif;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', 'Roboto', sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-main);
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-white);
             height: 100vh;
             margin: 0;
             display: flex;
@@ -29,496 +33,462 @@
             user-select: none;
         }
 
-        .game-container {
-            width: 90%;
+        .app-container {
+            width: 100%;
             max-width: 480px;
-            background: var(--panel-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 25px;
-            border: var(--glass-border);
-            padding: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            height: 100%;
+            max-height: 900px;
+            background: linear-gradient(180deg, #363255 0%, #1e1b33 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            padding: 25px;
             position: relative;
-            max-height: 98vh;
             overflow-y: auto;
         }
-        .game-container::-webkit-scrollbar { display: none; }
+        .app-container::-webkit-scrollbar { display: none; }
 
-        .info-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 10px; font-weight: bold; color: #ccc;
-        }
-        .timer {
-            font-family: 'Courier New', monospace;
-            color: var(--neon-green); font-size: 1.3rem; text-shadow: 0 0 5px var(--neon-green);
-        }
+        /* [시작 화면] */
+        .title-area { text-align: center; margin-top: 30px; margin-bottom: 30px; }
+        .main-title { font-size: 3rem; font-weight: 900; color: white; text-shadow: 0 0 20px rgba(0, 242, 254, 0.6); margin: 0; }
+        .sub-title { color: var(--text-gray); margin-top: 5px; font-size: 1rem; }
 
-        /* [문제 영역] */
-        .math-board {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 20px;
-            padding: 20px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+        .user-bar { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .user-name { font-weight: bold; color: var(--accent-cyan); font-size: 1.1rem; }
+        .btn-change { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 20px; padding: 5px 15px; font-size: 0.8rem; cursor: pointer; }
 
-        .vertical-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            text-align: center;
-            width: 100%;
-        }
-
-        .grid-item {
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; font-weight: bold; height: 50px; color: #fff;
-        }
-
-        .line {
-            grid-column: 1 / -1;
-            height: 2px; background: #666; margin: 5px 0 10px 0;
-            box-shadow: 0 1px 0 rgba(255,255,255,0.2);
-        }
-
-        /* 입력창 스타일 */
-        input {
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid #444; color: white; text-align: center;
-            border-radius: 10px; outline: none; transition: all 0.2s; font-family: inherit;
-        }
-        input.active {
-            border-color: var(--neon-blue);
-            background: rgba(0, 242, 254, 0.15);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
-            transform: scale(1.05);
-        }
-
-        .carry-input {
-            width: 30px; height: 30px; font-size: 1rem;
-            border-radius: 50%; border: 1px solid #666; color: var(--neon-pink); margin: auto;
-        }
-
-        .final-cell {
-            width: 100%; height: 50px;
-            font-size: 1.8rem; font-weight: bold;
-            border: 2px solid #555;
-        }
+        .mode-box { background: rgba(0,0,0,0.25); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .box-title { color: var(--accent-cyan); font-weight: 800; margin-bottom: 15px; font-size: 1rem; letter-spacing: 1px; }
         
-        /* [단계별 풀이 영역] */
-        .step-wrapper {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 15px; padding: 10px;
-            display: flex; flex-direction: column; gap: 8px;
-        }
-        .step-row {
+        .radio-option { display: flex; align-items: flex-start; margin-bottom: 15px; cursor: pointer; }
+        .radio-option input { margin-top: 5px; margin-right: 15px; accent-color: var(--accent-cyan); transform: scale(1.3); }
+        .opt-title { font-size: 1.1rem; font-weight: bold; color: white; margin-bottom: 4px; }
+        .opt-desc { font-size: 0.9rem; color: var(--text-gray); line-height: 1.4; }
+
+        /* 연산 선택 버튼 */
+        .op-select { margin-left: 35px; margin-bottom: 10px; display: flex; gap: 8px; }
+        .op-btn { 
+            width: 40px; height: 40px; 
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); 
+            color: white; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; 
             display: flex; align-items: center; justify-content: center;
-            gap: 15px; font-size: 1.1rem; color: #aaa;
         }
-        .step-input { width: 100px; height: 40px; font-size: 1.4rem; }
-        .highlight-num { color: var(--neon-blue); font-weight: bold; }
+        .op-btn.selected { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); }
 
-        /* 다이얼 패드 */
-        .numpad {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: auto;
-        }
-        .key {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 15px; color: white; font-size: 1.5rem; height: 60px;
-            cursor: pointer; transition: background 0.1s;
-        }
-        .key:active { background: rgba(255,255,255,0.2); }
-        .key-submit { background: linear-gradient(135deg, var(--neon-blue), #2980b9); color: #000; font-weight: bold; border:none; }
-        .key-clear { color: var(--neon-pink); border-color: rgba(255, 0, 85, 0.3); }
+        /* 난이도 선택 */
+        .level-select { margin-left: 35px; margin-bottom: 20px; display: flex; gap: 8px; }
+        .lvl-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
+        .lvl-btn.selected { background: var(--accent-purple); color: white; border-color: var(--accent-purple); font-weight: bold; }
 
-        /* 사용자 UI */
-        .user-interface {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 20px;
-            border-radius: 15px;
-            display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px;
-        }
-        .user-header { display: flex; justify-content: space-between; align-items: center; }
-        .user-display { font-size: 1.1rem; color: var(--neon-green); font-weight: bold; }
-        .login-btn { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; }
-        .user-input-area { display: flex; gap: 10px; }
-        .user-input-field { flex: 1; padding: 8px; font-size: 1rem; text-align: left; }
+        .btn-start { width: 100%; padding: 18px; border-radius: 30px; background: var(--accent-cyan); color: #000; font-size: 1.3rem; font-weight: 900; border: none; cursor: pointer; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); margin-top: auto; margin-bottom: 10px; }
 
-        /* [결과 테이블 스타일] */
-        .result-table {
-            width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem;
-        }
-        .result-table th { color: #888; border-bottom: 1px solid #444; padding: 8px; }
-        .result-table td { padding: 8px; border-bottom: 1px solid #333; text-align: center; }
-        .res-o { color: var(--neon-green); font-weight: bold; }
-        .res-x { color: var(--neon-pink); font-weight: bold; }
-        .score-display { font-size: 2.5rem; color: var(--neon-blue); font-weight: bold; margin: 10px 0; text-shadow: 0 0 10px rgba(0,242,254,0.5); }
+        /* [게임 화면] */
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: 20px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-home { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; margin-right: 5px; }
+        .q-count { color: white; font-weight: bold; font-size: 1.2rem; }
+        .timer { color: var(--accent-cyan); font-weight: bold; font-size: 1.5rem; font-family: monospace; }
 
-        /* 유틸리티 */
+        /* 문제 카드 */
+        .problem-card { 
+            background: #231f38; border-radius: 20px; padding: 20px; min-height: 180px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 15px; position: relative; 
+        }
+        .speed-text { font-size: 3.5rem; font-weight: bold; margin-bottom: 5px; line-height: 1; }
+        .speed-op { color: #ff3b30; margin: 0 15px; }
+
+        /* 스피드모드 입력 영역 */
+        .speed-input-area { width: 100%; display: flex; justify-content: center; margin-top: 10px; } 
+
+        /* 단계별 풀이 */
+        .step-container { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .step-row { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: #ccc; }
+        .step-input { width: 80px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid #555; border-radius: 10px; text-align: center; color: white; font-size: 1.2rem; font-weight: bold; outline: none; }
+        .step-input.active { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); }
+
+        /* 세로식 그리드 */
+        .v-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; width: 100%; max-width: 300px; }
+        .v-cell { height: 50px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: white; }
+        .v-line { grid-column: 1/-1; height: 2px; background: #666; margin: 5px 0; }
+        .carry-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #666; color: #ff3b30; display:flex; align-items:center; justify-content:center; font-size:1rem; margin:auto;}
+
+        .final-cell-wrapper { padding: 4px; }
+        .final-input { width: 100%; height: 55px; background: rgba(255,255,255,0.1); border: 2px solid #555; border-radius: 12px; color: white; text-align: center; font-size: 1.8rem; font-weight: bold; }
+        .final-input.active { border-color: var(--accent-cyan); }
+
+        /* [수정됨] 키패드 위치: 하단 고정 해제 및 상단 여백 조정 */
+        .numpad { 
+            display: flex; 
+            gap: 5px; 
+            width: 100%; 
+            margin-top: 20px; /* 문제 바로 아래에 위치 */
+            margin-bottom: 20px; /* 하단 여백 확보 */
+        }
+        .key { flex: 1; height: 55px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; font-size: 1.4rem; font-weight: bold; cursor: pointer; }
+        .key:active { background: rgba(255,255,255,0.3); }
+        .key-ent { flex: 1.5; background: var(--accent-cyan); color: #000; }
+        .key-del { flex: 1.2; color: #ff3b30; }
+
+        .result-screen { display: none; text-align: center; }
+        .score-big { font-size: 4rem; color: var(--accent-cyan); font-weight: bold; margin: 20px 0; text-shadow: 0 0 20px var(--accent-cyan); }
+        .res-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; text-align: left; }
+        .res-table th { color: #888; padding: 10px; border-bottom: 1px solid #444; }
+        .res-table td { padding: 10px; border-bottom: 1px solid #333; }
+
         .hidden { display: none !important; }
-        .mode-select { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; margin: 20px 0; text-align: left; }
-        .mode-label { display: block; margin: 15px 0; cursor: pointer; font-size: 1.1rem; }
-        input[type="radio"] { accent-color: var(--neon-blue); margin-right: 10px; transform: scale(1.2); }
-        .main-btn { width: 100%; padding: 15px; font-size: 1.3rem; border-radius: 50px; background: var(--neon-blue); border: none; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); }
-
+        .modal { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:100; }
+        .modal-box { background: #2b2742; padding: 20px; border-radius: 16px; width: 80%; }
+        
         /* 3D 큐브 */
-        .scene { width: 80px; height: 80px; perspective: 400px; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 100; pointer-events: none; }
-        .cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transform: translateZ(-40px); }
+        .scene { width: 60px; height: 60px; perspective: 400px; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 100; pointer-events: none; }
+        .cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transform: translateZ(-30px); }
         .cube.spin { animation: spinCube 2s infinite linear; }
-        .cube__face { position: absolute; width: 80px; height: 80px; border: 2px solid #fff; line-height: 80px; font-size: 24px; font-weight: bold; color: #000; background: var(--neon-blue); text-align: center; opacity: 0.9; }
-        .cube__face--front { transform: rotateY(0deg) translateZ(40px); } .cube__face--right { transform: rotateY(90deg) translateZ(40px); } .cube__face--back { transform: rotateY(180deg) translateZ(40px); } .cube__face--left { transform: rotateY(-90deg) translateZ(40px); } .cube__face--top { transform: rotateX(90deg) translateZ(40px); } .cube__face--bottom { transform: rotateX(-90deg) translateZ(40px); }
-        @keyframes spinCube { from { transform: translateZ(-40px) rotate3d(1, 1, 1, 0deg); } to { transform: translateZ(-40px) rotate3d(1, 1, 1, 360deg); } }
+        .cube__face { position: absolute; width: 60px; height: 60px; border: 2px solid #fff; line-height: 60px; font-size: 20px; font-weight: bold; color: #000; background: var(--accent-cyan); text-align: center; opacity: 0.9; }
+        .cube__face--front { transform: rotateY(0deg) translateZ(30px); } .cube__face--right { transform: rotateY(90deg) translateZ(30px); } .cube__face--back { transform: rotateY(180deg) translateZ(30px); } .cube__face--left { transform: rotateY(-90deg) translateZ(30px); } .cube__face--top { transform: rotateX(90deg) translateZ(30px); } .cube__face--bottom { transform: rotateX(-90deg) translateZ(30px); }
+        @keyframes spinCube { from { transform: translateZ(-30px) rotate3d(1, 1, 1, 0deg); } to { transform: translateZ(-30px) rotate3d(1, 1, 1, 360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="game-container" id="start-screen">
-        <div style="text-align: center; margin-top: 10px;">
-            <h1 style="margin:0; font-size: 3rem; text-shadow: 0 0 15px var(--neon-blue);">MATH V11</h1>
-            <p style="color:#aaa; margin-top: 5px;">Test Mode Edition</p>
+    <div class="app-container" id="screen-start">
+        <div class="title-area">
+            <h1 class="main-title">MATH V20</h1>
+            <div class="sub-title">Compact Layout Edition</div>
         </div>
 
-        <div class="user-interface">
-            <div class="user-header">
-                <span id="user-display" class="user-display">Guest Player</span>
-                <button class="login-btn" onclick="toggleUserLogin()">👤 사용자 등록/변경</button>
-            </div>
-            <div id="user-input-area" class="user-input-area hidden">
-                <input type="text" id="username-input" class="user-input-field" placeholder="이름 입력">
-                <button class="login-btn" style="background:var(--neon-blue); color:black;" onclick="loginUser()">확인</button>
-            </div>
+        <div class="user-bar">
+            <span class="user-name" id="display-user">Guest Player</span>
+            <button class="btn-change" onclick="showLogin()">사용자 등록/변경</button>
         </div>
 
-        <div class="mode-select" style="margin-top: 10px;">
-            <h3 style="color: var(--neon-blue); margin: 0 0 15px 0;">TRAINING MODE</h3>
-            <label class="mode-label">
-                <input type="radio" name="mode" value="normal"> 
-                ⚡ <b>스피드 모드</b> (바로 정답 입력)
+        <div class="mode-box">
+            <div class="box-title">TRAINING MODE</div>
+            
+            <label class="radio-option">
+                <input type="radio" name="mode" value="speed" checked onclick="toggleOptions('speed')">
+                <div>
+                    <div class="opt-title">⚡ 스피드 모드 (빠른 연산)</div>
+                    <div class="opt-desc">원하는 연산을 선택하여 빠르게 풉니다.</div>
+                </div>
             </label>
-            <label class="mode-label">
-                <input type="radio" name="mode" value="step" checked> 
-                🐢 <b>단계별 풀기</b> (교육용 추천)
-                <div style="font-size: 0.9rem; color: #888; margin-top: 5px; margin-left: 28px;">
-                    1의 자리부터 순서대로 풀고<br>최종 정답 칸을 채웁니다.
+            
+            <div id="speed-ops" class="op-select">
+                <div class="op-btn" onclick="setOpType('+')" id="op-plus">＋</div>
+                <div class="op-btn" onclick="setOpType('-')" id="op-minus">－</div>
+                <div class="op-btn" onclick="setOpType('*')" id="op-mul">×</div>
+                <div class="op-btn" onclick="setOpType('/')" id="op-div">÷</div>
+                <div class="op-btn selected" onclick="setOpType('random')" id="op-rand">?</div>
+            </div>
+
+            <div id="speed-levels" class="level-select">
+                <div class="lvl-btn" onclick="setLevel(1)" id="lv1">Lv.1</div>
+                <div class="lvl-btn selected" onclick="setLevel(2)" id="lv2">Lv.2</div>
+                <div class="lvl-btn" onclick="setLevel(3)" id="lv3">Lv.3</div>
+                <div class="lvl-btn" onclick="setLevel(4)" id="lv4">Lv.4</div>
+            </div>
+
+            <label class="radio-option">
+                <input type="radio" name="mode" value="step" onclick="toggleOptions('step')">
+                <div>
+                    <div class="opt-title">🐢 곱셈 단계별 풀이</div>
+                    <div class="opt-desc">세로식 곱셈의 원리를 단계별로 익힙니다.</div>
                 </div>
             </label>
         </div>
 
-        <button class="main-btn" onclick="startGame()">MISSION START</button>
+        <button class="btn-start" onclick="startGame()">MISSION START</button>
     </div>
 
-    <div class="game-container hidden" id="game-screen">
-        <div class="info-bar">
-            <span>Q <span id="q-num" style="color: white;">1</span> / 10</span>
-            <span class="timer" id="timer">0.0</span>
+    <div class="app-container hidden" id="screen-game">
+        <div class="game-header">
+            <div class="header-left">
+                <button class="btn-home" onclick="goHome()">🏠</button>
+                <div class="q-count">Q <span id="q-curr">1</span> / 10</div>
+            </div>
+            <div class="timer" id="timer">0.0</div>
         </div>
 
-        <div class="math-board">
-            <div class="vertical-grid" id="main-grid"></div>
+        <div class="problem-card">
+            <div id="problem-area" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
+            
+            <div id="speed-input-container" class="speed-input-area hidden">
+                </div>
         </div>
 
-        <div id="step-section" class="step-wrapper hidden"></div>
+        <div id="bottom-area"></div>
 
-        <div id="msg-box" style="height: 25px; text-align: center; color: var(--neon-pink); font-weight: bold; margin: 5px 0;"></div>
+        <div id="msg-box" style="height:20px; text-align:center; color:#ff3b30; font-weight:bold; margin-bottom:5px;"></div>
+
+        <div class="numpad">
+            <button class="key" onclick="inputKey(1)">1</button>
+            <button class="key" onclick="inputKey(2)">2</button>
+            <button class="key" onclick="inputKey(3)">3</button>
+            <button class="key" onclick="inputKey(4)">4</button>
+            <button class="key" onclick="inputKey(5)">5</button>
+            <button class="key" onclick="inputKey(6)">6</button>
+            <button class="key" onclick="inputKey(7)">7</button>
+            <button class="key" onclick="inputKey(8)">8</button>
+            <button class="key" onclick="inputKey(9)">9</button>
+            <button class="key" onclick="inputKey(0)">0</button>
+            <button class="key key-del" onclick="delKey()">C</button>
+            <button class="key key-ent" onclick="submitAns()">OK</button>
+        </div>
 
         <div class="scene" id="scene">
             <div class="cube" id="cube">
-                <div class="cube__face cube__face--front">GOOD</div>
-                <div class="cube__face cube__face--right">PERFECT</div>
-                <div class="cube__face cube__face--back">GREAT</div>
-                <div class="cube__face cube__face--left">NICE</div>
-                <div class="cube__face cube__face--top">WOW</div>
-                <div class="cube__face cube__face--bottom">SUPER</div>
+                <div class="cube__face cube__face--front">GOOD</div><div class="cube__face cube__face--right">NICE</div><div class="cube__face cube__face--back">GREAT</div>
+                <div class="cube__face cube__face--left">COOL</div><div class="cube__face cube__face--top">WOW</div><div class="cube__face cube__face--bottom">YES</div>
             </div>
-        </div>
-
-        <div class="numpad">
-            <button class="key" onclick="inputNum(7)">7</button>
-            <button class="key" onclick="inputNum(8)">8</button>
-            <button class="key" onclick="inputNum(9)">9</button>
-            <button class="key" onclick="inputNum(4)">4</button>
-            <button class="key" onclick="inputNum(5)">5</button>
-            <button class="key" onclick="inputNum(6)">6</button>
-            <button class="key" onclick="inputNum(1)">1</button>
-            <button class="key" onclick="inputNum(2)">2</button>
-            <button class="key" onclick="inputNum(3)">3</button>
-            <button class="key key-clear" onclick="clearInput()">C</button>
-            <button class="key" onclick="inputNum(0)">0</button>
-            <button class="key key-submit" onclick="submitCurrent()">ENTER</button>
         </div>
     </div>
 
-    <div class="game-container hidden" id="report-screen">
-        <h1 style="text-align: center; color: var(--neon-blue);">FINAL REPORT</h1>
-        
-        <div style="text-align: center;">
-            <div style="color:#aaa;">SCORE</div>
-            <div class="score-display" id="final-score">100점</div>
+    <div class="app-container hidden" id="screen-result">
+        <div class="title-area">
+            <h1 class="main-title" style="font-size:2.5rem;">REPORT</h1>
         </div>
-
-        <div style="background: rgba(0,0,0,0.3); border-radius: 15px; padding: 10px; max-height: 200px; overflow-y: auto;">
-            <table class="result-table">
-                <thead>
-                    <tr>
-                        <th width="15%">No</th>
-                        <th width="35%">문제</th>
-                        <th width="30%">내답/정답</th>
-                        <th width="20%">결과</th>
-                    </tr>
-                </thead>
-                <tbody id="result-tbody">
-                    </tbody>
+        <div class="score-big" id="final-score">100</div>
+        <div style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:12px; padding:10px;">
+            <table class="res-table">
+                <thead><tr><th>No</th><th>문제</th><th>정답</th><th>결과</th></tr></thead>
+                <tbody id="res-tbody"></tbody>
             </table>
         </div>
-
-        <div id="cumulative-stats" class="hidden" style="margin-top: 15px; background:rgba(0,0,0,0.4); padding:10px; border-radius:15px; text-align:center; border:1px solid #555;">
-            <p style="margin:5px 0; font-size: 0.9rem;">누적 게임: <span id="total-games" style="color:var(--neon-green)">0</span>회 | 전체 평균: <span id="total-avg-speed" style="color:var(--neon-blue)">0</span>s</p>
+        <div style="text-align:center; margin:15px; color:#aaa;">
+            Total: <span style="color:#fff" id="total-games">0</span> | Avg: <span style="color:#00f2fe" id="avg-time">0</span>s
         </div>
+        <button class="btn-start" onclick="location.reload()">RETRY</button>
+    </div>
 
-        <button class="main-btn" style="margin-top: 20px;" onclick="location.reload()">RETRY</button>
+    <div id="modal-login" class="modal hidden">
+        <div class="modal-box">
+            <h3 style="color:white;">사용자 이름 입력</h3>
+            <input type="text" id="inp-name" style="width:100%; padding:10px; margin:15px 0; font-size:1.1rem;">
+            <div style="display:flex; gap:10px;">
+                <button onclick="saveUser()" style="flex:1; padding:10px; background:var(--accent-cyan); border:none; border-radius:8px; font-weight:bold;">확인</button>
+                <button onclick="document.getElementById('modal-login').classList.add('hidden')" style="flex:1; padding:10px; background:#555; border:none; border-radius:8px; color:white;">취소</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        let qCount = 1;
+        // 데이터
+        let mode = 'speed'; // speed, step
+        let difficulty = 2; // 1~4
+        let speedOpType = 'random'; // +, -, *, /, random
+        let qNum = 1;
         const totalQ = 10;
-        let num1, num2;
-        let solveMode = 'step'; 
-        let activeInputId = null; 
-        let startTime, timerInterval;
-        let history = []; // 문제 풀이 기록 저장
-        let currentUser = null; 
+        let num1, num2, op, ans;
+        let activeId = null;
+        let history = [];
+        let startTime, timerInt;
+        let user = null;
 
-        // 사용자 입력창 토글
-        function toggleUserLogin() {
-            const area = document.getElementById('user-input-area');
-            if (area.classList.contains('hidden')) {
-                area.classList.remove('hidden');
-                document.getElementById('username-input').focus();
-            } else {
-                area.classList.add('hidden');
+        // UI 제어
+        function toggleOptions(m) { 
+            mode = m; 
+            document.getElementById('speed-levels').style.display = (m === 'speed') ? 'flex' : 'none'; 
+            document.getElementById('speed-ops').style.display = (m === 'speed') ? 'flex' : 'none'; 
+        }
+        function setLevel(lv) { 
+            difficulty = lv; 
+            document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('selected')); 
+            document.getElementById('lv' + lv).classList.add('selected'); 
+        }
+        function setOpType(type) {
+            speedOpType = type;
+            document.querySelectorAll('.op-btn').forEach(b => b.classList.remove('selected'));
+            let btnId = type === '+' ? 'op-plus' : (type === '-' ? 'op-minus' : (type === '*' ? 'op-mul' : (type === '/' ? 'op-div' : 'op-rand')));
+            document.getElementById(btnId).classList.add('selected');
+        }
+
+        function showLogin() { document.getElementById('modal-login').classList.remove('hidden'); }
+        function goHome() { if(confirm("게임을 종료하고 홈으로 돌아가시겠습니까?")) location.reload(); }
+        
+        function saveUser() {
+            const nm = document.getElementById('inp-name').value.trim();
+            if(nm) {
+                let db = JSON.parse(localStorage.getItem('mm_v20') || '{}');
+                if(!db[nm]) db[nm] = { games:0, time:0 };
+                user = { name:nm, data:db[nm] };
+                localStorage.setItem('mm_v20', JSON.stringify(db));
+                document.getElementById('display-user').innerText = nm;
+                document.getElementById('modal-login').classList.add('hidden');
             }
         }
 
-        // 사용자 로그인/등록
-        function loginUser() {
-            const nameInput = document.getElementById('username-input');
-            const name = nameInput.value.trim();
-            if (name) {
-                let db = JSON.parse(localStorage.getItem('math_master_users')) || {};
-                if (!db[name]) {
-                    db[name] = { games: 0, totalTime: 0 };
-                    alert(`반갑습니다, ${name}님!`);
-                } else {
-                    alert(`${name}님, 환영합니다!`);
-                }
-                currentUser = { name: name, ...db[name] };
-                localStorage.setItem('math_master_users', JSON.stringify(db));
-                document.getElementById('user-display').innerText = `Player: ${name}`;
-                document.getElementById('user-display').style.color = 'var(--neon-pink)';
-                toggleUserLogin();
-            }
-        }
-
+        // 게임 시작
         function startGame() {
-            const radios = document.getElementsByName('mode');
-            radios.forEach(r => { if(r.checked) solveMode = r.value; });
-            history = []; // 기록 초기화
-            qCount = 1;
-
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            
-            startTime = Date.now();
-            startTimer();
-            nextProblem();
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            history = []; qNum = 1;
+            nextQ();
         }
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                const t = (Date.now() - startTime) / 1000;
-                document.getElementById('timer').innerText = t.toFixed(1);
-            }, 100);
-        }
-
-        function nextProblem() {
-            if(qCount > totalQ) { endGame(); return; }
-
-            document.getElementById('q-num').innerText = qCount;
+        function nextQ() {
+            if(qNum > totalQ) { finish(); return; }
+            document.getElementById('q-curr').innerText = qNum;
             document.getElementById('msg-box').innerText = '';
-            document.getElementById('scene').style.display = 'none';
-            document.getElementById('cube').classList.remove('spin');
-
-            num1 = Math.floor(Math.random() * 900) + 100;
-            num2 = Math.floor(Math.random() * 8) + 2;
-
-            renderBoard();
+            genProb();
+            clearInterval(timerInt);
+            document.getElementById('timer').innerText = "0.0";
+            startTime = Date.now();
+            timerInt = setInterval(()=>{ document.getElementById('timer').innerText = ((Date.now()-startTime)/1000).toFixed(1); }, 100);
         }
 
-        function renderBoard() {
-            const grid = document.getElementById('main-grid');
-            grid.innerHTML = '';
-            const sNum1 = String(num1);
+        function genProb() {
+            const sInputArea = document.getElementById('speed-input-container');
+            
+            if(mode === 'speed') {
+                // 연산자 결정
+                if(speedOpType === 'random') {
+                    const ops = ['+','-','*','/'];
+                    op = ops[Math.floor(Math.random()*ops.length)];
+                } else {
+                    op = speedOpType;
+                }
 
-            // Row 1 (Carry)
-            addCell(grid, ''); addCell(grid, '');
-            grid.appendChild(createCarryInput('carry-100'));
-            grid.appendChild(createCarryInput('carry-10'));
-            addCell(grid, '');
+                let min=1, max=9;
+                if(difficulty === 2) { min=10; max=99; }
+                if(difficulty === 3) { min=10; max=99; }
+                if(difficulty === 4) { min=100; max=999; }
 
-            // Row 2 (Num1)
-            addCell(grid, ''); addCell(grid, '');
-            addCell(grid, sNum1[0]); addCell(grid, sNum1[1]); addCell(grid, sNum1[2]);
-
-            // Row 3 (Num2)
-            addCell(grid, '×', 'var(--neon-pink)'); addCell(grid, ''); addCell(grid, ''); addCell(grid, ''); addCell(grid, num2);
-
-            // Row 4 (Line)
-            const line = document.createElement('div'); line.className = 'line'; grid.appendChild(line);
-
-            // Row 5 (Inputs)
-            for (let i = 0; i < 5; i++) {
-                const input = document.createElement('input');
-                input.className = 'final-cell';
-                input.id = `final-cell-${i}`;
-                input.readOnly = true;
-                input.onclick = () => setFocus(`final-cell-${i}`);
-                grid.appendChild(input);
-            }
-
-            // Steps
-            const stepSection = document.getElementById('step-section');
-            stepSection.innerHTML = '';
-            if (solveMode === 'step') {
-                stepSection.classList.remove('hidden');
-                const digits = [sNum1[2], sNum1[1], sNum1[0]];
-                digits.forEach((d, idx) => {
-                    const row = document.createElement('div');
-                    row.className = 'step-row';
-                    row.innerHTML = `<span class="highlight-num">${d}</span> × <span class="highlight-num">${num2}</span> = `;
-                    const input = document.createElement('input');
-                    input.className = 'step-input';
-                    input.id = `step-input-${idx}`;
-                    input.readOnly = true;
-                    input.onclick = () => setFocus(`step-input-${idx}`);
-                    row.appendChild(input);
-                    stepSection.appendChild(row);
-                });
-                setFocus('step-input-0');
+                if(op === '+') { 
+                    num1 = rand(min, max); num2 = rand(min, max); 
+                    ans = num1 + num2; 
+                } 
+                else if(op === '-') { 
+                    num1 = rand(min, max); num2 = rand(min, max); 
+                    if(num1 < num2) [num1, num2] = [num2, num1]; 
+                    ans = num1 - num2; 
+                } 
+                else if(op === '*') { 
+                    // 곱셈 난이도 조정
+                    let m1 = difficulty > 2 ? 99 : 9; 
+                    if(difficulty === 4) m1 = 99; // Lv4
+                    if(difficulty === 1) { num1 = rand(2,9); num2 = rand(2,9); }
+                    else if(difficulty === 2) { num1 = rand(10,99); num2 = rand(2,9); }
+                    else if(difficulty === 3) { num1 = rand(10,99); num2 = rand(10,99); }
+                    else { num1 = rand(100,999); num2 = rand(2,9); }
+                    ans = num1 * num2; 
+                } 
+                else { 
+                    // 나눗셈
+                    num2 = rand(2, 9); 
+                    ans = rand(2, difficulty*5); 
+                    num1 = ans * num2; 
+                }
             } else {
-                stepSection.classList.add('hidden');
-                setFocus('final-cell-4');
+                op = '*'; num1 = rand(100, 999); num2 = rand(2, 9); ans = num1 * num2;
+            }
+            renderUI();
+        }
+
+        function rand(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
+
+        function renderUI() {
+            const pArea = document.getElementById('problem-area');
+            const bArea = document.getElementById('bottom-area');
+            const sInputArea = document.getElementById('speed-input-container');
+            pArea.innerHTML = ''; bArea.innerHTML = ''; sInputArea.innerHTML = ''; sInputArea.classList.add('hidden');
+
+            if(mode === 'speed') {
+                let sym = op==='*'?'×':(op==='/'?'÷':op);
+                pArea.innerHTML = `<div class="speed-text">${num1}<span class="speed-op">${sym}</span>${num2}</div>`;
+                
+                // 입력창 위치: 문제 텍스트 바로 아래
+                sInputArea.classList.remove('hidden');
+                sInputArea.innerHTML = `<input id="ans-speed" class="final-input active" style="max-width:200px; height:60px; font-size:2.5rem;" readonly onclick="focusId('ans-speed')">`;
+                activeId = 'ans-speed';
+            } else {
+                const s1 = String(num1);
+                let html = `<div class="v-grid">`;
+                html += `<div></div><div></div><div><div class="carry-circle" id="c1" onclick="focusId('c1')"></div></div><div><div class="carry-circle" id="c2" onclick="focusId('c2')"></div></div><div></div>`;
+                html += `<div></div><div></div><div class="v-cell">${s1[0]}</div><div class="v-cell">${s1[1]}</div><div class="v-cell">${s1[2]}</div>`;
+                html += `<div class="v-cell" style="color:#ff3b30">×</div><div></div><div></div><div></div><div class="v-cell">${num2}</div>`;
+                html += `<div class="v-line"></div>`;
+                
+                // 정답 입력칸 5개
+                for(let i=0; i<5; i++) { 
+                    html += `<div class="final-cell-wrapper"><input id="ans-${i}" class="final-input" readonly onclick="focusId('ans-${i}')"></div>`; 
+                }
+                html += `</div>`;
+                pArea.innerHTML = html;
+
+                // 하단 단계별 풀이 도우미
+                let stepHtml = `<div class="step-container">`;
+                const digits = s1.split('').reverse();
+                digits.forEach((d, i) => {
+                    stepHtml += `<div class="step-row"><span style="color:var(--accent-cyan); font-weight:bold;">${d}</span> × ${num2} = <input id="step-${i}" class="step-input" readonly onclick="focusId('step-${i}')"></div>`;
+                });
+                stepHtml += `</div>`;
+                bArea.innerHTML = stepHtml;
+                
+                focusId('step-0');
             }
         }
 
-        function addCell(p, t, c) { const d = document.createElement('div'); d.className='grid-item'; d.innerText=t; if(c) d.style.color=c; p.appendChild(d); }
-        function createCarryInput(id) {
-            const w = document.createElement('div'); w.className='grid-item';
-            const i = document.createElement('input'); i.className='carry-input'; i.id=id; i.readOnly=true;
-            i.onclick=(e)=>{e.stopPropagation(); setFocus(id);}; w.appendChild(i); return w;
+        function focusId(id) {
+            if(activeId) { const prev = document.getElementById(activeId); if(prev) { prev.classList.remove('active'); if(prev.classList.contains('carry-circle')) prev.style.background = 'transparent'; }}
+            activeId = id; const curr = document.getElementById(id); if(curr) { curr.classList.add('active'); if(curr.classList.contains('carry-circle')) curr.style.background = 'rgba(255,255,255,0.2)'; }
         }
 
-        function setFocus(id) {
-            const prev = document.querySelector('.active'); if(prev) prev.classList.remove('active');
-            const target = document.getElementById(id); if(target) { target.classList.add('active'); activeInputId = id; }
+        function inputKey(n) {
+            if(!activeId) return;
+            const el = document.getElementById(activeId);
+            if(activeId === 'ans-speed' || activeId.startsWith('step')) { if(el.value.length < 8) el.value += n; } 
+            else if(activeId.startsWith('c')) { el.innerText = n; } 
+            else { el.value = n; }
         }
 
-        function inputNum(n) {
-            if(!activeInputId) return;
-            const el = document.getElementById(activeInputId);
-            const isStep = activeInputId.includes('step');
-            const limit = isStep ? 3 : 1; 
-            if(el.value.length < limit) el.value += n;
+        function delKey() {
+            if(!activeId) return;
+            const el = document.getElementById(activeId);
+            if(activeId.startsWith('c')) el.innerText = ''; else el.value = '';
         }
 
-        function clearInput() { if(activeInputId) document.getElementById(activeInputId).value = ''; }
-
-        function submitCurrent() {
-            if(!activeInputId) return;
-            if(solveMode === 'step' && activeInputId.includes('step-input')) {
-                const currentIdx = parseInt(activeInputId.split('-')[2]);
-                if(currentIdx < 2) setFocus(`step-input-${currentIdx + 1}`);
-                else setFocus('final-cell-4');
+        function submitAns() {
+            if(!activeId) return;
+            
+            // 단계별 풀이 엔터 로직
+            if(activeId.startsWith('step')) {
+                const idx = parseInt(activeId.split('-')[1]);
+                const next = `step-${idx+1}`;
+                if(document.getElementById(next)) focusId(next); 
+                else focusId('ans-4');
                 return;
             }
-            if(activeInputId.includes('final-cell')) checkFinalAnswer();
+            
+            // 정답 체크
+            let uVal;
+            if(mode === 'speed') { uVal = parseInt(document.getElementById('ans-speed').value); } 
+            else { let s = ""; for(let i=0; i<5; i++) { const e = document.getElementById(`ans-${i}`); if(e) s += e.value; } uVal = parseInt(s); }
+
+            if(isNaN(uVal)) return;
+            const ok = (uVal === ans);
+            history.push({ q:`${num1} ${op} ${num2}`, a:ans, u:uVal, ok:ok });
+
+            if(ok) { document.getElementById('msg-box').innerText = "Perfect!"; setTimeout(()=>{ qNum++; nextQ(); }, 500); } 
+            else { qNum++; nextQ(); }
         }
 
-        function checkFinalAnswer() {
-            let userStr = "";
-            for(let i=0; i<5; i++) userStr += document.getElementById(`final-cell-${i}`).value;
-            const userVal = parseInt(userStr);
-            const correctVal = num1 * num2;
-            const isCorrect = (!isNaN(userVal) && userVal === correctVal);
-
-            // 기록 저장
-            history.push({
-                q: `${num1} × ${num2}`,
-                user: isNaN(userVal) ? "-" : userVal,
-                ans: correctVal,
-                ok: isCorrect
+        function finish() {
+            clearInterval(timerInt);
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+            const correct = history.filter(h=>h.ok).length;
+            document.getElementById('final-score').innerText = correct * 10;
+            const tbody = document.getElementById('res-tbody'); tbody.innerHTML = '';
+            history.forEach((h, i) => {
+                let qStr = h.q.replace('*','×').replace('/','÷');
+                tbody.innerHTML += `<tr><td>${i+1}</td><td>${qStr}</td><td>${h.a}</td><td style="color:${h.ok?'var(--accent-green)':'#ff3b30'}">${h.ok?'O':'X'}</td></tr>`;
             });
-
-            if(isCorrect) {
-                // 정답: 효과 후 다음
-                document.getElementById('msg-box').innerText = "PERFECT!";
-                document.getElementById('scene').style.display = 'block';
-                document.getElementById('cube').classList.add('spin');
-                setTimeout(() => { qCount++; nextProblem(); }, 1200);
-            } else {
-                // 오답: Silent Pass (피드백 없이 즉시 이동)
-                qCount++;
-                nextProblem();
-            }
-        }
-
-        function endGame() {
-            clearInterval(timerInterval);
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('report-screen').classList.remove('hidden');
-            
-            const totalTime = parseFloat(document.getElementById('timer').innerText);
-            const correctCount = history.filter(h => h.ok).length;
-            const score = correctCount * 10;
-            
-            // 점수 표시
-            document.getElementById('final-score').innerText = score + "점";
-            
-            // 상세 결과 테이블 생성
-            const tbody = document.getElementById('result-tbody');
-            tbody.innerHTML = '';
-            history.forEach((h, idx) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${idx + 1}</td>
-                    <td>${h.q}</td>
-                    <td>${h.user} / ${h.ans}</td>
-                    <td>${h.ok ? '<span class="res-o">O</span>' : '<span class="res-x">X</span>'}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // 누적 통계
-            if (currentUser) {
-                let db = JSON.parse(localStorage.getItem('math_master_users'));
-                db[currentUser.name].games += 1;
-                db[currentUser.name].totalTime += totalTime;
-                localStorage.setItem('math_master_users', JSON.stringify(db));
-
-                const totalGames = db[currentUser.name].games;
-                const totalAvg = (db[currentUser.name].totalTime / (totalGames * totalQ)).toFixed(1);
-
-                document.getElementById('cumulative-stats').classList.remove('hidden');
-                document.getElementById('total-games').innerText = totalGames;
-                document.getElementById('total-avg-speed').innerText = totalAvg;
-            } else {
-                document.getElementById('cumulative-stats').classList.add('hidden');
+            if(user) {
+                let db = JSON.parse(localStorage.getItem('mm_v20'));
+                db[user.name].games++;
+                localStorage.setItem('mm_v20', JSON.stringify(db));
+                document.getElementById('total-games').innerText = db[user.name].games;
             }
         }
     </script>
