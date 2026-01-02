@@ -25,12 +25,14 @@
             background-color: var(--bg-color);
             color: var(--text-white);
             height: 100vh;
+            height: 100dvh;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             user-select: none;
+            padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
         }
 
         .app-container {
@@ -43,9 +45,10 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
-            padding: 25px;
+            padding: 25px 25px 35px 25px;
             position: relative;
             overflow-y: auto;
+            padding-bottom: max(35px, env(safe-area-inset-bottom, 20px));
         }
         .app-container::-webkit-scrollbar { display: none; }
 
@@ -142,7 +145,8 @@
             gap: 8px; 
             margin-top: 15px; 
             width: 100%; 
-            margin-bottom: 15px; 
+            margin-bottom: 15px;
+            flex-shrink: 0;
         }
         .key { 
             height: 50px; 
@@ -152,7 +156,8 @@
             color: white; 
             font-size: 1.4rem; 
             font-weight: bold; 
-            cursor: pointer; 
+            cursor: pointer;
+            touch-action: manipulation;
         }
         .key:active { background: rgba(255,255,255,0.3); transform: scale(0.95); }
         .key-ent { 
@@ -169,7 +174,9 @@
             border-radius: 16px;
             padding: 10px;
             margin-top: 10px;
+            margin-bottom: 20px;
             display: none;
+            flex-shrink: 0;
         }
         .sketch-container.show {
             display: block;
