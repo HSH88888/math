@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Master V23 - Bug Fix</title>
+    <title>Math Master V24 - Bug Fixed</title>
     <style>
         /* [테마: Deep Purple & Cyan] */
         :root {
@@ -53,7 +53,7 @@
         .title-area { text-align: center; margin-top: 30px; margin-bottom: 30px; }
         .main-title { 
             font-size: 3rem; font-weight: 900; color: white; 
-            text-shadow: 0 0 20px rgba(0, 242, 254, 0.8); /* 네온 효과 강화 */
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.8);
             margin: 0; 
         }
         .sub-title { color: var(--text-gray); margin-top: 5px; font-size: 1rem; }
@@ -126,7 +126,7 @@
         .key-ent { flex: 1.5; background: var(--accent-cyan); color: #000; }
         .key-del { flex: 1.2; color: #ff3b30; }
 
-        /* 정답 메시지 영역 (3D 큐브 대체) */
+        /* 정답 메시지 영역 */
         .msg-box { height: 30px; text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 10px; min-height: 40px;}
 
         /* 결과 화면 */
@@ -162,7 +162,7 @@
 
     <div class="app-container" id="screen-start">
         <div class="title-area">
-            <h1 class="main-title">MATH V23</h1>
+            <h1 class="main-title">MATH V24</h1>
             <div class="sub-title">Ultimate Bug Fixed</div>
         </div>
 
@@ -250,7 +250,7 @@
         <div class="score-big" id="final-score">100</div>
         <div style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:12px; padding:10px;">
             <table class="res-table">
-                <thead><tr><th width="15%">No</th><th width="35%">문제</th><th width="35%">내답 / 정답</th><th width="15%">결과</th></tr></thead>
+                <thead><tr><th width="10%">No</th><th width="30%">문제</th><th width="30%">내답 / 정답</th><th width="15%">시간</th><th width="15%">결과</th></tr></thead>
                 <tbody id="res-tbody"></tbody>
             </table>
         </div>
@@ -284,7 +284,7 @@
         let history = [];
         let startTime, timerInt;
         let currentUser = null;
-        let isProcessing = false; // 중복 제출 방지 락
+        let isProcessing = false;
 
         // UI 제어
         function toggleOptions(m) { 
@@ -311,7 +311,7 @@
         function renderUserList() {
             const list = document.getElementById('user-list');
             list.innerHTML = '';
-            const db = JSON.parse(localStorage.getItem('mm_v23_db') || '{}');
+            const db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
             const names = Object.keys(db);
 
             const guestDiv = document.createElement('div');
@@ -323,7 +323,9 @@
             names.forEach(name => {
                 const div = document.createElement('div');
                 div.className = `user-item ${currentUser && currentUser.name === name ? 'active' : ''}`;
-                div.innerHTML = `<span>${name} <span style="font-size:0.8rem; color:#aaa;">(${db[name].games}판)</span></span><button class="del-user-btn" onclick="deleteUser('${name}', event)">×</button>`;
+                const userData = db[name];
+                const avgTime = userData.games > 0 ? (userData.time / userData.games / 10).toFixed(1) : '0.0';
+                div.innerHTML = `<span>${name} <span style="font-size:0.8rem; color:#aaa;">(${userData.games}판 | ${avgTime}s)</span></span><button class="del-user-btn" onclick="deleteUser('${name}', event)">×</button>`;
                 div.onclick = (e) => { if(e.target.tagName === 'BUTTON') return; selectUser(name); };
                 list.appendChild(div);
             });
@@ -332,10 +334,10 @@
         function registerNewUser() {
             const nm = document.getElementById('inp-name').value.trim();
             if(!nm) return;
-            let db = JSON.parse(localStorage.getItem('mm_v23_db') || '{}');
+            let db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
             if(db[nm]) { alert('이미 존재하는 이름입니다.'); return; }
             db[nm] = { games: 0, time: 0 };
-            localStorage.setItem('mm_v23_db', JSON.stringify(db));
+            localStorage.setItem('mm_v24_db', JSON.stringify(db));
             document.getElementById('inp-name').value = '';
             renderUserList();
         }
@@ -343,9 +345,9 @@
         function deleteUser(name, e) {
             e.stopPropagation();
             if(!confirm(`'${name}' 사용자를 삭제하시겠습니까?`)) return;
-            let db = JSON.parse(localStorage.getItem('mm_v23_db') || '{}');
+            let db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
             delete db[name];
-            localStorage.setItem('mm_v23_db', JSON.stringify(db));
+            localStorage.setItem('mm_v24_db', JSON.stringify(db));
             if(currentUser && currentUser.name === name) selectUser(null);
             renderUserList();
         }
@@ -356,7 +358,7 @@
                 document.getElementById('display-user').innerText = "Guest Player";
                 document.getElementById('display-user').style.color = "white";
             } else {
-                let db = JSON.parse(localStorage.getItem('mm_v23_db') || '{}');
+                let db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
                 currentUser = { name: name, data: db[name] };
                 document.getElementById('display-user').innerText = name;
                 document.getElementById('display-user').style.color = "var(--accent-cyan)";
@@ -377,7 +379,7 @@
         function nextQ() {
             if(qNum > totalQ) { finish(); return; }
             
-            isProcessing = false; // 락 해제
+            isProcessing = false;
             document.getElementById('q-curr').innerText = qNum;
             document.getElementById('msg-box').innerText = '';
             
@@ -403,11 +405,18 @@
                 if(difficulty === 3) { min=10; max=99; }
                 if(difficulty === 4) { min=100; max=999; }
 
-                if(op === '+') { num1 = rand(min, max); num2 = rand(min, max); ans = num1 + num2; } 
-                else if(op === '-') { num1 = rand(min, max); num2 = rand(min, max); if(num1 < num2) [num1, num2] = [num2, num1]; ans = num1 - num2; } 
+                if(op === '+') { 
+                    num1 = rand(min, max); 
+                    num2 = rand(min, max); 
+                    ans = num1 + num2; 
+                } 
+                else if(op === '-') { 
+                    num1 = rand(min, max); 
+                    num2 = rand(min, max); 
+                    if(num1 < num2) [num1, num2] = [num2, num1]; 
+                    ans = num1 - num2; 
+                } 
                 else if(op === '*') { 
-                    let m1 = difficulty > 2 ? 99 : 9; 
-                    if(difficulty === 4) m1 = 99; 
                     if(difficulty === 1) { num1 = rand(2,9); num2 = rand(2,9); }
                     else if(difficulty === 2) { num1 = rand(10,99); num2 = rand(2,9); }
                     else if(difficulty === 3) { num1 = rand(10,99); num2 = rand(10,99); }
@@ -420,7 +429,10 @@
                     num1 = ans * num2; 
                 }
             } else {
-                op = '*'; num1 = rand(100, 999); num2 = rand(2, 9); ans = num1 * num2;
+                op = '*'; 
+                num1 = rand(100, 999); 
+                num2 = rand(2, 9); 
+                ans = num1 * num2;
             }
             renderUI();
         }
@@ -462,16 +474,33 @@
         }
 
         function focusId(id) {
-            if(activeId) { const prev = document.getElementById(activeId); if(prev) { prev.classList.remove('active'); if(prev.classList.contains('carry-circle')) prev.style.background = 'transparent'; }}
-            activeId = id; const curr = document.getElementById(id); if(curr) { curr.classList.add('active'); if(curr.classList.contains('carry-circle')) curr.style.background = 'rgba(255,255,255,0.2)'; }
+            if(activeId) { 
+                const prev = document.getElementById(activeId); 
+                if(prev) { 
+                    prev.classList.remove('active'); 
+                    if(prev.classList.contains('carry-circle')) prev.style.background = 'transparent'; 
+                }
+            }
+            activeId = id; 
+            const curr = document.getElementById(id); 
+            if(curr) { 
+                curr.classList.add('active'); 
+                if(curr.classList.contains('carry-circle')) curr.style.background = 'rgba(255,255,255,0.2)'; 
+            }
         }
 
         function inputKey(n) {
-            if(!activeId || isProcessing) return; // 락 걸려있으면 입력 불가
+            if(!activeId || isProcessing) return;
             const el = document.getElementById(activeId);
-            if(activeId === 'ans-speed' || activeId.startsWith('step')) { if(el.value.length < 8) el.value += n; } 
-            else if(activeId.startsWith('c')) { el.innerText = n; } 
-            else { el.value = n; }
+            if(activeId === 'ans-speed' || activeId.startsWith('step')) { 
+                if(el.value.length < 8) el.value += n; 
+            } 
+            else if(activeId.startsWith('c')) { 
+                el.innerText = n; 
+            } 
+            else { 
+                el.value = n; 
+            }
         }
 
         function delKey() {
@@ -483,7 +512,7 @@
         }
 
         function submitAns() {
-            if(!activeId || isProcessing) return; // 락 체크
+            if(!activeId || isProcessing) return;
             
             if(activeId.startsWith('step')) {
                 const idx = parseInt(activeId.split('-')[1]);
@@ -493,25 +522,42 @@
             }
             
             let uVal;
-            if(mode === 'speed') { uVal = parseInt(document.getElementById('ans-speed').value); } 
-            else { let s = ""; for(let i=0; i<5; i++) { const e = document.getElementById(`ans-${i}`); if(e) s += e.value; } uVal = parseInt(s); }
+            if(mode === 'speed') { 
+                uVal = parseInt(document.getElementById('ans-speed').value); 
+            } 
+            else { 
+                let s = ""; 
+                for(let i=0; i<5; i++) { 
+                    const e = document.getElementById(`ans-${i}`); 
+                    if(e) s += e.value; 
+                } 
+                uVal = parseInt(s); 
+            }
 
-            if(isNaN(uVal)) return; // 빈 값 제출 방지
+            if(isNaN(uVal)) return;
 
-            // [중요] 중복 제출 방지 락 걸기
             isProcessing = true;
+            clearInterval(timerInt);
 
+            const elapsedTime = (Date.now() - startTime) / 1000;
             const ok = (uVal === ans);
-            history.push({ q:`${num1} ${op} ${num2}`, a:ans, u:uVal, ok:ok });
+            history.push({ 
+                q: `${num1} ${op} ${num2}`, 
+                a: ans, 
+                u: uVal, 
+                ok: ok,
+                time: elapsedTime
+            });
 
             if(ok) { 
                 document.getElementById('msg-box').innerText = "정답!";
                 document.getElementById('msg-box').style.color = "#00ff88"; 
-                setTimeout(()=>{ qNum++; nextQ(); }, 500); 
+                setTimeout(()=>{ qNum++; nextQ(); }, 600); 
             } 
             else { 
-                // 오답일 경우 Silent Pass (바로 넘어감)
-                qNum++; nextQ(); 
+                document.getElementById('msg-box').innerText = `틀렸어요! 정답: ${ans}`;
+                document.getElementById('msg-box').style.color = "#ff3b30"; 
+                setTimeout(()=>{ qNum++; nextQ(); }, 1200); 
             }
         }
 
@@ -519,9 +565,12 @@
             clearInterval(timerInt);
             document.getElementById('screen-game').classList.add('hidden');
             document.getElementById('screen-result').classList.remove('hidden');
+            
             const correct = history.filter(h=>h.ok).length;
             document.getElementById('final-score').innerText = correct * 10;
-            const tbody = document.getElementById('res-tbody'); tbody.innerHTML = '';
+            
+            const tbody = document.getElementById('res-tbody'); 
+            tbody.innerHTML = '';
             
             history.forEach((h, i) => {
                 let qStr = h.q.replace('*','×').replace('/','÷');
@@ -530,17 +579,58 @@
                         <td>${i+1}</td>
                         <td>${qStr}</td>
                         <td>${h.ok ? `<span class="correct-ans">${h.a}</span>` : `<span class="wrong-ans">${h.u}</span> / ${h.a}`}</td>
+                        <td style="color:#888">${h.time.toFixed(1)}s</td>
                         <td style="color:${h.ok?'var(--accent-cyan)':'#ff3b30'}">${h.ok?'O':'X'}</td>
                     </tr>`;
             });
 
-            if(user) {
-                let db = JSON.parse(localStorage.getItem('mm_v23_db'));
-                db[user.name].games++;
-                localStorage.setItem('mm_v23_db', JSON.stringify(db));
-                document.getElementById('total-games').innerText = db[user.name].games;
+            const totalTime = history.reduce((sum, h) => sum + h.time, 0);
+            const avgTime = (totalTime / history.length).toFixed(1);
+
+            if(currentUser) {
+                let db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
+                if(!db[currentUser.name]) db[currentUser.name] = { games: 0, time: 0 };
+                
+                db[currentUser.name].games++;
+                db[currentUser.name].time += totalTime;
+                
+                localStorage.setItem('mm_v24_db', JSON.stringify(db));
+                
+                const userAvgTime = (db[currentUser.name].time / db[currentUser.name].games / 10).toFixed(1);
+                document.getElementById('total-games').innerText = db[currentUser.name].games;
+                document.getElementById('avg-time').innerText = userAvgTime;
+            } else {
+                document.getElementById('total-games').innerText = "1 (Guest)";
+                document.getElementById('avg-time').innerText = avgTime;
             }
         }
+
+        // 키보드 지원
+        document.addEventListener('keydown', (e) => {
+            const gameScreen = document.getElementById('screen-game');
+            if(gameScreen.classList.contains('hidden')) return;
+            
+            if(e.key >= '0' && e.key <= '9') {
+                e.preventDefault();
+                inputKey(parseInt(e.key));
+            }
+            else if(e.key === 'Enter') {
+                e.preventDefault();
+                submitAns();
+            }
+            else if(e.key === 'Backspace' || e.key === 'Delete') {
+                e.preventDefault();
+                delKey();
+            }
+        });
+
+        // Enter 키로 새 사용자 추가
+        document.getElementById('inp-name').addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') {
+                e.preventDefault();
+                registerNewUser();
+            }
+        });
     </script>
 </body>
 </html>
