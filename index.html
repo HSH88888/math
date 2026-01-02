@@ -218,10 +218,10 @@
 
         /* 결과 화면 */
         .result-screen { display: none; text-align: center; }
-        .score-big { font-size: 4rem; color: var(--accent-cyan); font-weight: bold; margin: 20px 0; text-shadow: 0 0 20px var(--accent-cyan); }
-        .res-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; text-align: left; }
-        .res-table th { color: #888; padding: 10px; border-bottom: 1px solid #444; }
-        .res-table td { padding: 10px; border-bottom: 1px solid #333; }
+        .score-big { font-size: 3rem; color: var(--accent-cyan); font-weight: bold; margin: 15px 0; text-shadow: 0 0 20px var(--accent-cyan); }
+        .res-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; }
+        .res-table th { color: #888; padding: 8px 4px; border-bottom: 1px solid #444; font-size: 0.7rem; }
+        .res-table td { padding: 8px 4px; border-bottom: 1px solid #333; }
         .wrong-ans { color: #ff3b30; font-weight: bold; text-decoration: line-through; margin-right: 5px; }
         .correct-ans { color: var(--accent-cyan); font-weight: bold; }
 
@@ -350,20 +350,43 @@
     </div>
 
     <div class="app-container hidden" id="screen-result">
-        <div class="title-area">
-            <h1 class="main-title" style="font-size:2.5rem;">REPORT</h1>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:0 10px; margin-top:15px; margin-bottom:10px;">
+            <button class="btn-home" onclick="location.reload()" style="font-size:1.8rem;">🏠</button>
+            <div style="text-align:center;">
+                <h1 class="main-title" style="font-size:2rem; margin:0;">REPORT</h1>
+                <div style="color:var(--text-gray); font-size:0.85rem; margin-top:5px;" id="result-mode-info">스피드 모드 • Lv.2</div>
+            </div>
+            <button class="btn-home" onclick="restartSameLevel()" style="font-size:1.8rem;">🔄</button>
         </div>
-        <div class="score-big" id="final-score">100</div>
-        <div style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:12px; padding:10px;">
+        <div class="sub-title" id="result-username" style="text-align:center; margin-bottom:10px;">Guest Player</div>
+        <div class="score-big" id="final-score">100점</div>
+        
+        <!-- 분석 카드 -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+            <div style="background:rgba(0,242,254,0.1); border:1px solid rgba(0,242,254,0.3); border-radius:12px; padding:12px; text-align:center;">
+                <div style="color:#888; font-size:0.75rem; margin-bottom:5px;">정답률</div>
+                <div style="color:var(--accent-cyan); font-size:1.5rem; font-weight:bold;" id="accuracy-rate">100%</div>
+            </div>
+            <div style="background:rgba(94,92,230,0.1); border:1px solid rgba(94,92,230,0.3); border-radius:12px; padding:12px; text-align:center;">
+                <div style="color:#888; font-size:0.75rem; margin-bottom:5px;">평균 시간</div>
+                <div style="color:var(--accent-purple); font-size:1.5rem; font-weight:bold;" id="avg-solve-time">0.0초</div>
+            </div>
+            <div style="background:rgba(52,199,89,0.1); border:1px solid rgba(52,199,89,0.3); border-radius:12px; padding:12px; text-align:center;">
+                <div style="color:#888; font-size:0.75rem; margin-bottom:5px;">최고 속도</div>
+                <div style="color:#34c759; font-size:1.5rem; font-weight:bold;" id="fastest-time">0.0초</div>
+            </div>
+            <div style="background:rgba(255,204,0,0.1); border:1px solid rgba(255,204,0,0.3); border-radius:12px; padding:12px; text-align:center;">
+                <div style="color:#888; font-size:0.75rem; margin-bottom:5px;">총 플레이</div>
+                <div style="color:#ffcc00; font-size:1.5rem; font-weight:bold;" id="total-plays">1회</div>
+            </div>
+        </div>
+
+        <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:10px;">
             <table class="res-table">
-                <thead><tr><th width="10%">No</th><th width="30%">문제</th><th width="30%">내답 / 정답</th><th width="15%">시간</th><th width="15%">결과</th></tr></thead>
+                <thead><tr><th width="8%">No</th><th width="35%">문제</th><th width="32%">내답 / 정답</th><th width="15%">시간</th><th width="10%">결과</th></tr></thead>
                 <tbody id="res-tbody"></tbody>
             </table>
         </div>
-        <div style="text-align:center; margin:15px; color:#aaa;">
-            Total: <span style="color:#fff" id="total-games">0</span> | Avg: <span style="color:#00f2fe" id="avg-time">0</span>s
-        </div>
-        <button class="btn-start" onclick="location.reload()">RETRY</button>
     </div>
 
     <div id="modal-login" class="modal hidden">
@@ -572,6 +595,26 @@
         }
 
         function goHome() { if(confirm("게임을 종료하고 홈으로 돌아가시겠습니까?")) location.reload(); }
+
+        // 동일 난이도 재도전
+        function restartSameLevel() {
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            history = []; 
+            qNum = 1;
+            
+            // 그림판 표시 여부 설정
+            const sketchContainer = document.getElementById('sketch-container');
+            if(mode === 'speed') {
+                sketchContainer.classList.add('show');
+                if(!canvas) initCanvas();
+                clearCanvas();
+            } else {
+                sketchContainer.classList.remove('show');
+            }
+            
+            nextQ();
+        }
 
         // 게임 로직
         function startGame() {
@@ -788,7 +831,41 @@
             document.getElementById('screen-result').classList.remove('hidden');
             
             const correct = history.filter(h=>h.ok).length;
-            document.getElementById('final-score').innerText = correct * 10;
+            document.getElementById('final-score').innerText = correct * 10 + '점';
+            
+            // 사용자 이름 표시
+            const username = currentUser ? currentUser.name : 'Guest Player';
+            document.getElementById('result-username').innerText = username;
+            
+            // 모드와 난이도 정보 표시
+            let modeText = mode === 'speed' ? '⚡ 스피드 모드' : '🐢 곱셈 단계별';
+            let opText = '';
+            if(mode === 'speed') {
+                if(speedOpType === 'random') {
+                    opText = '랜덤';
+                } else if(speedOpType === '+') {
+                    opText = '덧셈';
+                } else if(speedOpType === '-') {
+                    opText = '뺄셈';
+                } else if(speedOpType === '*') {
+                    opText = '곱셈';
+                } else if(speedOpType === '/') {
+                    opText = '나눗셈';
+                }
+                opText = ' • ' + opText;
+            }
+            document.getElementById('result-mode-info').innerText = `${modeText}${opText} • Lv.${difficulty}`;
+            
+            // 통계 계산
+            const totalTime = history.reduce((sum, h) => sum + h.time, 0);
+            const avgTime = (totalTime / history.length).toFixed(1);
+            const fastestTime = Math.min(...history.map(h => h.time)).toFixed(1);
+            const accuracyRate = ((correct / totalQ) * 100).toFixed(0);
+            
+            // 분석 카드 업데이트
+            document.getElementById('accuracy-rate').innerText = accuracyRate + '%';
+            document.getElementById('avg-solve-time').innerText = avgTime + '초';
+            document.getElementById('fastest-time').innerText = fastestTime + '초';
             
             const tbody = document.getElementById('res-tbody'); 
             tbody.innerHTML = '';
@@ -800,13 +877,10 @@
                         <td>${i+1}</td>
                         <td>${qStr}</td>
                         <td>${h.ok ? `<span class="correct-ans">${h.a}</span>` : `<span class="wrong-ans">${h.u}</span> / ${h.a}`}</td>
-                        <td style="color:#888">${h.time.toFixed(1)}s</td>
+                        <td style="color:#888">${h.time.toFixed(1)}초</td>
                         <td style="color:${h.ok?'var(--accent-cyan)':'#ff3b30'}">${h.ok?'O':'X'}</td>
                     </tr>`;
             });
-
-            const totalTime = history.reduce((sum, h) => sum + h.time, 0);
-            const avgTime = (totalTime / history.length).toFixed(1);
 
             if(currentUser) {
                 let db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
@@ -817,12 +891,9 @@
                 
                 localStorage.setItem('mm_v24_db', JSON.stringify(db));
                 
-                const userAvgTime = (db[currentUser.name].time / db[currentUser.name].games / 10).toFixed(1);
-                document.getElementById('total-games').innerText = db[currentUser.name].games;
-                document.getElementById('avg-time').innerText = userAvgTime;
+                document.getElementById('total-plays').innerText = db[currentUser.name].games + '회';
             } else {
-                document.getElementById('total-games').innerText = "1 (Guest)";
-                document.getElementById('avg-time').innerText = avgTime;
+                document.getElementById('total-plays').innerText = '1회';
             }
         }
 
