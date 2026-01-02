@@ -87,6 +87,22 @@
 
         .btn-start { width: 100%; padding: 18px; border-radius: 30px; background: var(--accent-cyan); color: #000; font-size: 1.3rem; font-weight: 900; border: none; cursor: pointer; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); margin-top: 20px; margin-bottom: 10px; }
 
+        .btn-feedback { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 20px; 
+            background: rgba(94,92,230,0.2); 
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple); 
+            font-size: 0.9rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 10px;
+        }
+        .btn-feedback:hover {
+            background: rgba(94,92,230,0.3);
+        }
+
         /* [게임 화면] */
         .game-header { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: 20px; }
         .header-left { display: flex; align-items: center; gap: 15px; }
@@ -240,9 +256,58 @@
 
         .new-user-form { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
         .modal-input { flex: 1; padding: 12px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 1rem; }
+        .modal-textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: none; 
+            background: rgba(255,255,255,0.1); 
+            color: white; 
+            font-size: 0.9rem;
+            min-height: 100px;
+            resize: vertical;
+            font-family: var(--font-main);
+        }
         .modal-btn { padding: 0 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
         .btn-add { background: var(--accent-cyan); color: black; }
         .btn-close { width: 100%; padding: 12px; background: #444; color: white; border:none; border-radius:10px; margin-top:10px; font-weight:bold; cursor:pointer;}
+        
+        .feedback-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        .feedback-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--accent-cyan);
+        }
+        .feedback-author {
+            color: var(--accent-cyan);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        .feedback-date {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        .feedback-body {
+            color: #ddd;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-top: 8px;
+        }
+        .loading {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -294,6 +359,7 @@
         </div>
 
         <button class="btn-start" onclick="startGame()">MISSION START</button>
+        <button class="btn-feedback" onclick="openFeedbackModal()">💬 피드백 & 건의사항</button>
     </div>
 
     <div class="app-container hidden" id="screen-game">
@@ -401,7 +467,34 @@
         </div>
     </div>
 
+    <div id="modal-feedback" class="modal hidden">
+        <div class="modal-box" style="max-width:400px;">
+            <h3 style="color:var(--accent-cyan); margin-bottom:15px;">💬 피드백 게시판</h3>
+            
+            <div class="feedback-list" id="feedback-list">
+                <div class="loading">피드백을 불러오는 중...</div>
+            </div>
+            
+            <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
+                <h4 style="color:var(--accent-purple); margin-bottom:10px; font-size:0.9rem;">새 피드백 작성</h4>
+                <input type="text" id="feedback-name" class="modal-input" placeholder="이름 (선택)" style="margin-bottom:8px;">
+                <textarea id="feedback-text" class="modal-textarea" placeholder="의견이나 건의사항을 자유롭게 작성해주세요!"></textarea>
+                <button onclick="submitFeedback()" class="modal-btn btn-add" style="width:100%; padding:10px; margin-top:8px;">작성하기</button>
+            </div>
+            
+            <button onclick="closeFeedbackModal()" class="btn-close">닫기</button>
+        </div>
+    </div>
+
     <script>
+        // GitHub 설정 (여기에 본인의 정보를 입력하세요)
+        const GITHUB_CONFIG = {
+            owner: 'HSH88888',                  // GitHub 사용자명
+            repo: 'math-master-feedback',       // Repository 이름
+            issueNumber: 1,                     // Issue 번호
+            token: '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'
+        };
+
         // 데이터
         let mode = 'speed'; 
         let difficulty = 2; 
@@ -592,6 +685,107 @@
                 document.getElementById('display-user').style.color = "var(--accent-cyan)";
             }
             closeUserModal();
+        }
+
+        // 피드백 모달 관리
+        function openFeedbackModal() {
+            document.getElementById('modal-feedback').classList.remove('hidden');
+            loadFeedbacks();
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('modal-feedback').classList.add('hidden');
+        }
+
+        // GitHub Issues API를 통해 피드백 불러오기
+        async function loadFeedbacks() {
+            const list = document.getElementById('feedback-list');
+            list.innerHTML = '<div class="loading">피드백을 불러오는 중...</div>';
+
+            try {
+                const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues/${GITHUB_CONFIG.issueNumber}/comments`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load feedbacks');
+                }
+
+                const comments = await response.json();
+                
+                if (comments.length === 0) {
+                    list.innerHTML = '<div class="loading">아직 작성된 피드백이 없습니다.</div>';
+                    return;
+                }
+
+                list.innerHTML = '';
+                comments.reverse().slice(0, 10).forEach(comment => {
+                    const date = new Date(comment.created_at);
+                    const dateStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
+                    
+                    const div = document.createElement('div');
+                    div.className = 'feedback-item';
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="feedback-author">${comment.user.login}</span>
+                            <span class="feedback-date">${dateStr}</span>
+                        </div>
+                        <div class="feedback-body">${comment.body.replace(/\n/g, '<br>')}</div>
+                    `;
+                    list.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error loading feedbacks:', error);
+                list.innerHTML = '<div class="loading" style="color:#ff3b30;">피드백을 불러올 수 없습니다.<br>GitHub 설정을 확인해주세요.</div>';
+            }
+        }
+
+        // 피드백 제출
+        async function submitFeedback() {
+            const name = document.getElementById('feedback-name').value.trim() || '익명';
+            const text = document.getElementById('feedback-text').value.trim();
+
+            if (!text) {
+                alert('피드백 내용을 입력해주세요!');
+                return;
+            }
+
+            // Token이 없으면 GitHub Issue 페이지로 이동
+            if (!GITHUB_CONFIG.token || GITHUB_CONFIG.token === '') {
+                const issueUrl = `https://github.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues/${GITHUB_CONFIG.issueNumber}`;
+                const message = `피드백을 작성하려면 GitHub에 로그인이 필요합니다.\n\n작성할 내용:\n"${text}"\n\nGitHub Issue 페이지로 이동하시겠습니까?`;
+                
+                if (confirm(message)) {
+                    window.open(issueUrl, '_blank');
+                }
+                return;
+            }
+
+            const commentBody = `**${name}**\n\n${text}`;
+
+            try {
+                const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues/${GITHUB_CONFIG.issueNumber}/comments`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `token ${GITHUB_CONFIG.token}`
+                    },
+                    body: JSON.stringify({ body: commentBody })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to submit feedback');
+                }
+
+                alert('피드백이 등록되었습니다! 감사합니다 😊');
+                document.getElementById('feedback-name').value = '';
+                document.getElementById('feedback-text').value = '';
+                loadFeedbacks();
+            } catch (error) {
+                console.error('Error submitting feedback:', error);
+                alert('피드백 등록에 실패했습니다.\nGitHub 설정과 토큰을 확인해주세요.');
+            }
         }
 
         function goHome() { if(confirm("게임을 종료하고 홈으로 돌아가시겠습니까?")) location.reload(); }
