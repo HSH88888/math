@@ -25,48 +25,72 @@
             background-color: var(--bg-color);
             color: var(--text-white);
             height: 100vh;
-            height: 100dvh;
             margin: 0;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             user-select: none;
-            padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+        }
+        
+        @media (max-height: 700px) {
+            body {
+                align-items: stretch;
+            }
         }
 
         .app-container {
             width: 100%;
             max-width: 480px;
             height: 100%;
-            max-height: 900px;
+            max-height: 100vh;
             background: linear-gradient(180deg, #363255 0%, #1e1b33 100%);
             border-radius: 24px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
-            padding: 25px 25px 35px 25px;
+            padding: 20px;
             position: relative;
             overflow-y: auto;
-            padding-bottom: max(35px, env(safe-area-inset-bottom, 20px));
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
         .app-container::-webkit-scrollbar { display: none; }
+        
+        @media (max-height: 700px) {
+            .app-container {
+                padding: 15px;
+                border-radius: 0;
+                max-height: 100vh;
+            }
+        }
 
         /* [시작 화면] */
-        .title-area { text-align: center; margin-top: 30px; margin-bottom: 30px; }
+        .title-area { text-align: center; margin-top: 20px; margin-bottom: 20px; }
         .main-title { 
-            font-size: 3rem; font-weight: 900; color: white; 
+            font-size: 2.5rem; font-weight: 900; color: white; 
             text-shadow: 0 0 20px rgba(0, 242, 254, 0.8);
             margin: 0; 
         }
-        .sub-title { color: var(--text-gray); margin-top: 5px; font-size: 1rem; }
+        .sub-title { color: var(--text-gray); margin-top: 5px; font-size: 0.9rem; }
+        
+        @media (max-height: 700px) {
+            .title-area { margin-top: 10px; margin-bottom: 15px; }
+            .main-title { font-size: 2rem; }
+        }
 
         .user-bar { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .user-name { font-weight: bold; color: var(--accent-cyan); font-size: 1.1rem; }
         .btn-change { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 20px; padding: 5px 15px; font-size: 0.8rem; cursor: pointer; }
 
-        .mode-box { background: rgba(0,0,0,0.25); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-        .box-title { color: var(--accent-cyan); font-weight: 800; margin-bottom: 15px; font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; }
+        .mode-box { background: rgba(0,0,0,0.25); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
+        .box-title { color: var(--accent-cyan); font-weight: 800; margin-bottom: 12px; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; }
+        
+        @media (max-height: 700px) {
+            .mode-box { padding: 12px; margin-bottom: 10px; }
+            .box-title { margin-bottom: 10px; font-size: 0.85rem; }
+        }
         
         .radio-option { display: flex; align-items: flex-start; margin-bottom: 15px; cursor: pointer; }
         .radio-option input { margin-top: 5px; margin-right: 15px; accent-color: var(--accent-cyan); transform: scale(1.3); }
@@ -364,6 +388,8 @@
                 </div>
             </label>
         </div>
+
+        <div style="flex: 1; min-height: 20px;"></div>
 
         <button class="btn-start" onclick="startGame()">MISSION START</button>
         <button class="btn-feedback" onclick="openFeedbackModal()">💬 피드백 & 건의사항</button>
