@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Master V24 - Bug Fixed</title>
+    <title>Math Master V25 - Enhanced UI</title>
     <style>
         /* [테마: Deep Purple & Cyan] */
         :root {
@@ -119,12 +119,99 @@
         .final-input { width: 100%; height: 55px; background: rgba(255,255,255,0.1); border: 2px solid #555; border-radius: 12px; color: white; text-align: center; font-size: 1.8rem; font-weight: bold; }
         .final-input.active { border-color: var(--accent-cyan); }
 
-        /* 키패드 (일자형) */
-        .numpad { display: flex; gap: 5px; margin-top: 20px; width: 100%; margin-bottom: 20px; }
-        .key { flex: 1; height: 55px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; font-size: 1.4rem; font-weight: bold; cursor: pointer; }
-        .key:active { background: rgba(255,255,255,0.3); }
-        .key-ent { flex: 1.5; background: var(--accent-cyan); color: #000; }
-        .key-del { flex: 1.2; color: #ff3b30; }
+        /* 키패드 (2줄 형식) */
+        .numpad { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 8px; 
+            margin-top: 15px; 
+            width: 100%; 
+            margin-bottom: 15px; 
+        }
+        .key { 
+            height: 50px; 
+            background: rgba(255,255,255,0.1); 
+            border: none; 
+            border-radius: 10px; 
+            color: white; 
+            font-size: 1.4rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+        }
+        .key:active { background: rgba(255,255,255,0.3); transform: scale(0.95); }
+        .key-ent { 
+            background: var(--accent-cyan); 
+            color: #000; 
+        }
+        .key-del { 
+            color: #ff3b30; 
+        }
+
+        /* 그림판 */
+        .sketch-container {
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+        .sketch-container.show {
+            display: block;
+        }
+        .sketch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .sketch-title {
+            color: var(--accent-cyan);
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .sketch-controls {
+            display: flex;
+            gap: 8px;
+        }
+        .sketch-btn {
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .sketch-btn:active {
+            transform: scale(0.95);
+        }
+        .sketch-canvas {
+            width: 100%;
+            height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
+            cursor: crosshair;
+            touch-action: none;
+        }
+        .color-palette {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            justify-content: center;
+        }
+        .color-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+        .color-btn.active {
+            border-color: white;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
 
         /* 정답 메시지 영역 */
         .msg-box { height: 30px; text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 10px; min-height: 40px;}
@@ -162,8 +249,8 @@
 
     <div class="app-container" id="screen-start">
         <div class="title-area">
-            <h1 class="main-title">MATH V24</h1>
-            <div class="sub-title">Ultimate Bug Fixed</div>
+            <h1 class="main-title">MATH V25</h1>
+            <div class="sub-title">Enhanced UI Edition</div>
         </div>
 
         <div class="user-bar">
@@ -227,6 +314,7 @@
 
         <div id="msg-box" class="msg-box"></div>
 
+        <!-- 2줄 키패드 -->
         <div class="numpad">
             <button class="key" onclick="inputKey(1)">1</button>
             <button class="key" onclick="inputKey(2)">2</button>
@@ -240,6 +328,24 @@
             <button class="key" onclick="inputKey(0)">0</button>
             <button class="key key-del" onclick="delKey()">C</button>
             <button class="key key-ent" onclick="submitAns()">OK</button>
+        </div>
+
+        <!-- 그림판 (스피드 모드에서만 표시) -->
+        <div class="sketch-container" id="sketch-container">
+            <div class="sketch-header">
+                <span class="sketch-title">📝 메모장</span>
+                <div class="sketch-controls">
+                    <button class="sketch-btn" onclick="clearCanvas()">지우기</button>
+                </div>
+            </div>
+            <canvas id="sketch-canvas" class="sketch-canvas"></canvas>
+            <div class="color-palette">
+                <div class="color-btn active" style="background: white;" onclick="setDrawColor('white')"></div>
+                <div class="color-btn" style="background: #00f2fe;" onclick="setDrawColor('#00f2fe')"></div>
+                <div class="color-btn" style="background: #ff3b30;" onclick="setDrawColor('#ff3b30')"></div>
+                <div class="color-btn" style="background: #ffcc00;" onclick="setDrawColor('#ffcc00')"></div>
+                <div class="color-btn" style="background: #34c759;" onclick="setDrawColor('#34c759')"></div>
+            </div>
         </div>
     </div>
 
@@ -285,6 +391,105 @@
         let startTime, timerInt;
         let currentUser = null;
         let isProcessing = false;
+
+        // 그림판 변수
+        let canvas, ctx;
+        let isDrawing = false;
+        let drawColor = 'white';
+        let lastX = 0;
+        let lastY = 0;
+
+        // 그림판 초기화
+        function initCanvas() {
+            canvas = document.getElementById('sketch-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // 캔버스 크기 설정
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth - 24;
+            canvas.height = 200;
+            
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 3;
+            
+            // 마우스 이벤트
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // 터치 이벤트
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            ctx.strokeStyle = drawColor;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            
+            lastX = currentX;
+            lastY = currentY;
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            lastX = touch.clientX - rect.left;
+            lastY = touch.clientY - rect.top;
+            isDrawing = true;
+        }
+
+        function handleTouchMove(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const currentX = touch.clientX - rect.left;
+            const currentY = touch.clientY - rect.top;
+            
+            ctx.strokeStyle = drawColor;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            
+            lastX = currentX;
+            lastY = currentY;
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function setDrawColor(color) {
+            drawColor = color;
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
 
         // UI 제어
         function toggleOptions(m) { 
@@ -373,6 +578,17 @@
             document.getElementById('screen-start').classList.add('hidden');
             document.getElementById('screen-game').classList.remove('hidden');
             history = []; qNum = 1;
+            
+            // 그림판 표시 여부 설정
+            const sketchContainer = document.getElementById('sketch-container');
+            if(mode === 'speed') {
+                sketchContainer.classList.add('show');
+                initCanvas();
+                clearCanvas();
+            } else {
+                sketchContainer.classList.remove('show');
+            }
+            
             nextQ();
         }
 
@@ -382,6 +598,11 @@
             isProcessing = false;
             document.getElementById('q-curr').innerText = qNum;
             document.getElementById('msg-box').innerText = '';
+            
+            // 그림판 지우기
+            if(mode === 'speed' && ctx) {
+                clearCanvas();
+            }
             
             genProb();
             
