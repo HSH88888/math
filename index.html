@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Math Master V25 - Enhanced UI</title>
+    <title>Math Master V25 - Enhanced UI (Reverse Input)</title>
     <style>
         /* [테마: Deep Purple & Cyan] */
         :root {
@@ -173,6 +173,7 @@
         .final-cell-wrapper { padding: 4px; }
         .final-input { width: 100%; height: 55px; background: rgba(255,255,255,0.1); border: 2px solid #555; border-radius: 12px; color: white; text-align: center; font-size: 1.8rem; font-weight: bold; }
         .final-input.active { border-color: var(--accent-cyan); }
+        .final-input::placeholder { color: rgba(255,255,255,0.2); font-size: 1rem; font-weight: normal; }
 
         /* 키패드 (2줄 형식) */
         .numpad { 
@@ -425,7 +426,6 @@
 
         <div id="msg-box" class="msg-box"></div>
 
-        <!-- 2줄 키패드 -->
         <div class="numpad">
             <button class="key" onclick="inputKey(1)">1</button>
             <button class="key" onclick="inputKey(2)">2</button>
@@ -441,7 +441,6 @@
             <button class="key key-ent" onclick="submitAns()">OK</button>
         </div>
 
-        <!-- 그림판 (스피드 모드에서만 표시) -->
         <div class="sketch-container" id="sketch-container">
             <div class="sketch-header">
                 <span class="sketch-title">📝 메모장</span>
@@ -472,7 +471,6 @@
         <div class="sub-title" id="result-username" style="text-align:center; margin-bottom:10px;">Guest Player</div>
         <div class="score-big" id="final-score">100점</div>
         
-        <!-- 분석 카드 -->
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
             <div style="background:rgba(0,242,254,0.1); border:1px solid rgba(0,242,254,0.3); border-radius:12px; padding:12px; text-align:center;">
                 <div style="color:#888; font-size:0.75rem; margin-bottom:5px;">정답률</div>
@@ -537,7 +535,7 @@
             owner: 'HSH88888',                  // GitHub 사용자명
             repo: 'math-master-feedback',       // Repository 이름
             issueNumber: 1,                     // Issue 번호
-            token: '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'
+            token: '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'
         };
 
         // 데이터
@@ -952,7 +950,8 @@
                 let sym = op==='*'?'×':(op==='/'?'÷':op);
                 pArea.innerHTML = `<div class="speed-text">${num1}<span class="speed-op">${sym}</span>${num2}</div>`;
                 sInputArea.classList.remove('hidden');
-                sInputArea.innerHTML = `<input id="ans-speed" class="final-input active" style="max-width:200px; height:60px; font-size:2.5rem;" readonly onclick="focusId('ans-speed')">`;
+                // placeholder 추가: 일의 자리부터 입력됨을 암시
+                sInputArea.innerHTML = `<input id="ans-speed" class="final-input active" style="max-width:200px; height:60px; font-size:2.5rem;" readonly onclick="focusId('ans-speed')" placeholder="?">`;
                 activeId = 'ans-speed';
             } else {
                 const s1 = String(num1);
@@ -995,7 +994,13 @@
         function inputKey(n) {
             if(!activeId || isProcessing) return;
             const el = document.getElementById(activeId);
-            if(activeId === 'ans-speed' || activeId.startsWith('step')) { 
+            
+            if(activeId === 'ans-speed') { 
+                // [수정됨] 스피드 모드 정답: 일의 자리부터 입력 (숫자를 앞에 붙임)
+                if(el.value.length < 8) el.value = n + el.value; 
+            } 
+            else if(activeId.startsWith('step')) { 
+                // 단계별 풀이 등 나머지는 기존대로 뒤에 붙임
                 if(el.value.length < 8) el.value += n; 
             } 
             else if(activeId.startsWith('c')) { 
@@ -1009,9 +1014,20 @@
         function delKey() {
             if(!activeId || isProcessing) return;
             const el = document.getElementById(activeId);
-            if(activeId.startsWith('c')) el.innerText = ''; 
-            else if(activeId === 'ans-speed' || activeId.startsWith('step')) el.value = el.value.slice(0, -1);
-            else el.value = '';
+            
+            if(activeId === 'ans-speed') {
+                // [수정됨] 스피드 모드 정답: 앞에 있는 숫자(마지막에 입력한 숫자)를 지움
+                el.value = el.value.slice(1);
+            }
+            else if(activeId.startsWith('step')) {
+                el.value = el.value.slice(0, -1);
+            }
+            else if(activeId.startsWith('c')) {
+                el.innerText = ''; 
+            }
+            else {
+                el.value = '';
+            }
         }
 
         function submitAns() {
