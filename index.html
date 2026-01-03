@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Math Master V25 - Enhanced UI (Reverse Input)</title>
+    <title>Math Master V25 - 7-Column Keypad</title>
     <style>
         /* [테마: Deep Purple & Cyan] */
         :root {
@@ -11,6 +11,7 @@
             --card-bg: #1e1b33;
             --accent-cyan: #00f2fe; 
             --accent-purple: #5e5ce6;
+            --accent-orange: #ff9500;
             --text-white: #ffffff;
             --text-gray: #a0a0b0;
             --input-bg: rgba(255, 255, 255, 0.1);
@@ -98,7 +99,7 @@
             .box-title { margin-bottom: 8px; font-size: 0.8rem; }
         }
         
-        .radio-option { display: flex; align-items: flex-start; margin-bottom: 15px; cursor: pointer; }
+        .radio-option { display: flex; align-items: flex-start; margin-bottom: 10px; cursor: pointer; }
         .radio-option input { margin-top: 5px; margin-right: 15px; accent-color: var(--accent-cyan); transform: scale(1.3); }
         .opt-title { font-size: 1.1rem; font-weight: bold; color: white; margin-bottom: 4px; }
         .opt-desc { font-size: 0.9rem; color: var(--text-gray); line-height: 1.4; }
@@ -110,7 +111,7 @@
         }
 
         /* 연산 버튼 */
-        .op-select { margin-left: 35px; margin-bottom: 10px; display: flex; gap: 8px; }
+        .op-select { margin-left: 35px; margin-bottom: 15px; display: flex; gap: 8px; }
         .op-btn { 
             width: 40px; height: 40px; 
             background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); 
@@ -123,6 +124,8 @@
         .level-select { margin-left: 35px; margin-bottom: 20px; display: flex; gap: 8px; }
         .lvl-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
         .lvl-btn.selected { background: var(--accent-purple); color: white; border-color: var(--accent-purple); font-weight: bold; }
+        
+        .level-select.word-mode .lvl-btn.selected { background: var(--accent-orange); border-color: var(--accent-orange); color: black; }
 
         .btn-start { width: 100%; padding: 18px; border-radius: 30px; background: var(--accent-cyan); color: #000; font-size: 1.3rem; font-weight: 900; border: none; cursor: pointer; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); margin-top: 20px; margin-bottom: 10px; }
 
@@ -157,6 +160,18 @@
         }
         .speed-text { font-size: 3.5rem; font-weight: bold; margin-bottom: 5px; line-height: 1; }
         .speed-op { color: #ff3b30; margin: 0 15px; }
+        
+        .word-prob-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            text-align: center;
+            color: white;
+            word-break: keep-all;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            .word-prob-text { font-size: 1.1rem; }
+        }
 
         .speed-input-area { width: 100%; display: flex; justify-content: center; margin-top: 10px; } 
 
@@ -175,26 +190,35 @@
         .final-input.active { border-color: var(--accent-cyan); }
         .final-input::placeholder { color: rgba(255,255,255,0.2); font-size: 1rem; font-weight: normal; }
 
-        /* 키패드 (2줄 형식) */
-        .numpad { 
-            display: grid; 
-            grid-template-columns: repeat(6, 1fr); 
-            gap: 8px; 
-            margin-top: 15px; 
-            width: 100%; 
+        /* 키패드 영역 */
+        .numpad-container {
+            margin-top: 15px;
+            width: 100%;
             margin-bottom: 15px;
             flex-shrink: 0;
         }
+
+        /* 7열 키패드 (모드 버튼 포함) 
+           첫 번째 열(모드 버튼)은 조금 넓게(1.3fr), 나머지 숫자키는 균등하게(1fr)
+        */
+        .numpad { 
+            display: grid; 
+            grid-template-columns: 1.3fr repeat(6, 1fr); 
+            gap: 5px; 
+            width: 100%;
+        }
+        
         .key { 
             height: 50px; 
             background: rgba(255,255,255,0.1); 
             border: none; 
             border-radius: 10px; 
             color: white; 
-            font-size: 1.4rem; 
+            font-size: 1.3rem; 
             font-weight: bold; 
             cursor: pointer;
             touch-action: manipulation;
+            padding: 0;
         }
         .key:active { background: rgba(255,255,255,0.3); transform: scale(0.95); }
         .key-ent { 
@@ -203,6 +227,40 @@
         }
         .key-del { 
             color: #ff3b30; 
+        }
+
+        /* 모드 선택 버튼 (키패드 내 포함) */
+        .mode-btn {
+            height: 50px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #555;
+            border-radius: 10px;
+            color: #777;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
+            text-align: center;
+            transition: all 0.2s;
+            padding: 0 4px;
+        }
+        
+        /* 활성화된 모드 버튼 스타일 */
+        .mode-btn.active {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            background: rgba(0, 242, 254, 0.1);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);
+        }
+
+        /* 모바일 최적화: 폰트 사이즈 조정 */
+        @media (max-width: 400px) {
+            .numpad { gap: 3px; }
+            .key { font-size: 1.1rem; border-radius: 8px; }
+            .mode-btn { font-size: 0.75rem; border-radius: 8px; }
         }
 
         /* 그림판 */
@@ -359,7 +417,7 @@
     <div class="app-container" id="screen-start">
         <div class="title-area">
             <h1 class="main-title">MATH V25</h1>
-            <div class="sub-title">Enhanced UI Edition</div>
+            <div class="sub-title">Word Problem Edition</div>
         </div>
 
         <div class="user-bar">
@@ -392,6 +450,14 @@
                 <div class="lvl-btn" onclick="setLevel(3)" id="lv3">Lv.3</div>
                 <div class="lvl-btn" onclick="setLevel(4)" id="lv4">Lv.4</div>
             </div>
+
+            <label class="radio-option" id="label-word">
+                <input type="radio" name="mode" value="word" onclick="toggleOptions('word')">
+                <div>
+                    <div class="opt-title">📚 서술형 문제 (문장제)</div>
+                    <div class="opt-desc">문제를 읽고 식을 세워 정답을 구하세요.</div>
+                </div>
+            </label>
 
             <label class="radio-option">
                 <input type="radio" name="mode" value="step" onclick="toggleOptions('step')">
@@ -426,19 +492,24 @@
 
         <div id="msg-box" class="msg-box"></div>
 
-        <div class="numpad">
-            <button class="key" onclick="inputKey(1)">1</button>
-            <button class="key" onclick="inputKey(2)">2</button>
-            <button class="key" onclick="inputKey(3)">3</button>
-            <button class="key" onclick="inputKey(4)">4</button>
-            <button class="key" onclick="inputKey(5)">5</button>
-            <button class="key" onclick="inputKey(6)">6</button>
-            <button class="key" onclick="inputKey(7)">7</button>
-            <button class="key" onclick="inputKey(8)">8</button>
-            <button class="key" onclick="inputKey(9)">9</button>
-            <button class="key" onclick="inputKey(0)">0</button>
-            <button class="key key-del" onclick="delKey()">C</button>
-            <button class="key key-ent" onclick="submitAns()">OK</button>
+        <div class="numpad-container">
+            <div class="numpad">
+                <button id="btn-mode-normal" class="mode-btn" onclick="setInputMode('normal')">순차<br>입력</button>
+                <button class="key" onclick="inputKey(1)">1</button>
+                <button class="key" onclick="inputKey(2)">2</button>
+                <button class="key" onclick="inputKey(3)">3</button>
+                <button class="key" onclick="inputKey(4)">4</button>
+                <button class="key" onclick="inputKey(5)">5</button>
+                <button class="key" onclick="inputKey(6)">6</button>
+
+                <button id="btn-mode-reverse" class="mode-btn active" onclick="setInputMode('reverse')">역순<br>입력</button>
+                <button class="key" onclick="inputKey(7)">7</button>
+                <button class="key" onclick="inputKey(8)">8</button>
+                <button class="key" onclick="inputKey(9)">9</button>
+                <button class="key" onclick="inputKey(0)">0</button>
+                <button class="key key-del" onclick="delKey()">C</button>
+                <button class="key key-ent" onclick="submitAns()">OK</button>
+            </div>
         </div>
 
         <div class="sketch-container" id="sketch-container">
@@ -547,6 +618,18 @@
         let startTime, timerInt;
         let currentUser = null;
         let isProcessing = false;
+        
+        // 입력 모드 상태 (reverse: 역순, normal: 순차)
+        // 사용자가 처음에 편하게 느끼는 역순을 기본값으로 설정
+        let inputDirection = 'reverse';
+
+        // 서술형 문제용 변수
+        let currentWordProblem = "";
+        
+        // 서술형 템플릿 데이터
+        const wordNames = ['철수', '영희', '민수', '지수', '호랑이', '토끼', '다람쥐', '선생님'];
+        const wordItems = ['사과', '연필', '공책', '사탕', '지우개', '동전', '구슬', '장난감'];
+        const wordUnits = ['개', '자루', '권', '개', '개', '원', '알', '개'];
 
         // 그림판 변수
         let canvas, ctx;
@@ -644,12 +727,35 @@
             event.target.classList.add('active');
         }
 
-        // UI 제어
+        // UI 제어 (난이도 버튼 위치 이동 포함)
         function toggleOptions(m) { 
             mode = m; 
-            document.getElementById('speed-levels').style.display = (m === 'speed') ? 'flex' : 'none'; 
-            document.getElementById('speed-ops').style.display = (m === 'speed') ? 'flex' : 'none'; 
+            
+            const levelBox = document.getElementById('speed-levels');
+            const speedOps = document.getElementById('speed-ops');
+            const wordLabel = document.getElementById('label-word');
+
+            // 1. 연산 선택 박스 표시 여부 (스피드 모드일 때만)
+            speedOps.style.display = (m === 'speed') ? 'flex' : 'none';
+            
+            // 2. 난이도 박스 표시 및 위치 이동 로직
+            if (m === 'speed' || m === 'word') {
+                levelBox.style.display = 'flex';
+                
+                if (m === 'speed') {
+                    // 스피드 모드: 연산 버튼 아래로 이동
+                    speedOps.after(levelBox);
+                    levelBox.classList.remove('word-mode');
+                } else {
+                    // 서술형 모드: 서술형 라벨 아래로 이동
+                    wordLabel.after(levelBox);
+                    levelBox.classList.add('word-mode');
+                }
+            } else {
+                levelBox.style.display = 'none';
+            }
         }
+
         function setLevel(lv) { 
             difficulty = lv; 
             document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('selected')); 
@@ -660,6 +766,23 @@
             document.querySelectorAll('.op-btn').forEach(b => b.classList.remove('selected'));
             let btnId = type === '+' ? 'op-plus' : (type === '-' ? 'op-minus' : (type === '*' ? 'op-mul' : (type === '/' ? 'op-div' : 'op-rand')));
             document.getElementById(btnId).classList.add('selected');
+        }
+        
+        // 입력 모드 설정 함수 (순차/역순 버튼 클릭 시)
+        function setInputMode(dir) {
+            inputDirection = dir;
+            
+            // 버튼 스타일 업데이트
+            const normalBtn = document.getElementById('btn-mode-normal');
+            const reverseBtn = document.getElementById('btn-mode-reverse');
+            
+            if (dir === 'normal') {
+                normalBtn.classList.add('active');
+                reverseBtn.classList.remove('active');
+            } else {
+                normalBtn.classList.remove('active');
+                reverseBtn.classList.add('active');
+            }
         }
 
         // 사용자 관리
@@ -734,7 +857,6 @@
             document.getElementById('modal-feedback').classList.add('hidden');
         }
 
-        // Firebase Firestore에서 피드백 불러오기
         async function loadFeedbacks() {
             const list = document.getElementById('feedback-list');
             list.innerHTML = '<div class="loading">피드백을 불러오는 중...</div>';
@@ -780,7 +902,6 @@
             }
         }
 
-        // Firebase에 피드백 제출
         async function submitFeedback() {
             const name = document.getElementById('feedback-name').value.trim() || '익명';
             const text = document.getElementById('feedback-text').value.trim();
@@ -832,7 +953,7 @@
             qNum = 1;
             
             const sketchContainer = document.getElementById('sketch-container');
-            if(mode === 'speed') {
+            if(mode === 'speed' || mode === 'word') {
                 sketchContainer.classList.add('show');
                 if(!canvas) initCanvas();
                 clearCanvas();
@@ -849,7 +970,7 @@
             history = []; qNum = 1;
             
             const sketchContainer = document.getElementById('sketch-container');
-            if(mode === 'speed') {
+            if(mode === 'speed' || mode === 'word') {
                 sketchContainer.classList.add('show');
                 initCanvas();
                 clearCanvas();
@@ -867,16 +988,86 @@
             document.getElementById('q-curr').innerText = qNum;
             document.getElementById('msg-box').innerText = '';
             
-            if(mode === 'speed' && ctx) {
+            if((mode === 'speed' || mode === 'word') && ctx) {
                 clearCanvas();
             }
             
-            genProb();
+            if (mode === 'word') {
+                genWordProb();
+            } else {
+                genProb();
+            }
             
             clearInterval(timerInt);
             document.getElementById('timer').innerText = "0.0";
             startTime = Date.now();
             timerInt = setInterval(()=>{ document.getElementById('timer').innerText = ((Date.now()-startTime)/1000).toFixed(1); }, 100);
+        }
+
+        function rand(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
+
+        function genWordProb() {
+            // 서술형 문제 생성
+            const ops = ['+','-','*','/'];
+            // 난이도별 연산 가중치 조절 가능 (현재는 랜덤)
+            let chosenOp;
+            
+            // Lv 1, 2는 +, - 위주 / Lv 3, 4는 곱셈 나눗셈 섞어서
+            if (difficulty <= 2) {
+                chosenOp = Math.random() < 0.8 ? ops[Math.floor(Math.random()*2)] : ops[2]; // 80% 확률로 +,-
+            } else {
+                chosenOp = ops[Math.floor(Math.random()*ops.length)];
+            }
+
+            let min, max;
+            if(difficulty === 1) { min=2; max=15; }
+            else if(difficulty === 2) { min=10; max=50; }
+            else if(difficulty === 3) { min=50; max=500; }
+            else { min=500; max=9000; } // Lv.4
+
+            const nIdx = Math.floor(Math.random() * wordNames.length);
+            const name1 = wordNames[nIdx];
+            const name2 = wordNames[(nIdx + 1) % wordNames.length];
+            
+            const iIdx = Math.floor(Math.random() * wordItems.length);
+            const item = wordItems[iIdx];
+            const unit = wordUnits[iIdx];
+
+            if (chosenOp === '+') {
+                num1 = rand(min, max);
+                num2 = rand(min, max);
+                ans = num1 + num2;
+                currentWordProblem = `${name1}는 ${item}을 ${num1}${unit} 가지고 있습니다. ${name2}가 ${item}을 ${num2}${unit} 더 주었습니다. ${name1}가 가진 ${item}은 모두 몇 ${unit}인가요?`;
+                op = '+';
+            } else if (chosenOp === '-') {
+                num1 = rand(min, max);
+                num2 = rand(Math.floor(min/2), num1); // 빼는 수는 더 작게
+                ans = num1 - num2;
+                currentWordProblem = `${name1}는 ${item}을 ${num1}${unit} 가지고 있었습니다. 그 중 ${num2}${unit}를 친구에게 주었습니다. 남은 ${item}은 몇 ${unit}인가요?`;
+                op = '-';
+            } else if (chosenOp === '*') {
+                let m1, m2;
+                if(difficulty === 1) { m1 = rand(2,9); m2 = rand(2,9); }
+                else if(difficulty === 2) { m1 = rand(10,20); m2 = rand(2,9); }
+                else if(difficulty === 3) { m1 = rand(20,99); m2 = rand(2,9); }
+                else { m1 = rand(100,500); m2 = rand(10,50); } // Lv.4
+                num1 = m1; num2 = m2;
+                ans = num1 * num2;
+                currentWordProblem = `${item}이 한 상자에 ${num1}${unit}씩 들어있습니다. ${num2}상자에 들어있는 ${item}은 모두 몇 ${unit}인가요?`;
+                op = '×';
+            } else { // Division
+                let d1, d2;
+                if(difficulty === 1) { d2 = rand(2,5); d1 = d2 * rand(2,5); }
+                else if(difficulty === 2) { d2 = rand(2,9); d1 = d2 * rand(5,15); }
+                else if(difficulty === 3) { d2 = rand(5,20); d1 = d2 * rand(10,50); }
+                else { d2 = rand(10,99); d1 = d2 * rand(20,100); } // Lv.4
+                num1 = d1; num2 = d2;
+                ans = num1 / num2;
+                currentWordProblem = `${item} ${num1}${unit}를 ${num2}명의 학생에게 똑같이 나누어 주려고 합니다. 한 명당 몇 ${unit}씩 가질 수 있나요?`;
+                op = '÷';
+            }
+
+            renderUI();
         }
 
         function genProb() {
@@ -925,8 +1116,6 @@
             renderUI();
         }
 
-        function rand(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
-
         function renderUI() {
             const pArea = document.getElementById('problem-area');
             const bArea = document.getElementById('bottom-area');
@@ -939,7 +1128,14 @@
                 sInputArea.classList.remove('hidden');
                 sInputArea.innerHTML = `<input id="ans-speed" class="final-input active" style="max-width:200px; height:60px; font-size:2.5rem;" readonly onclick="focusId('ans-speed')" placeholder="?">`;
                 activeId = 'ans-speed';
-            } else {
+            } 
+            else if (mode === 'word') {
+                pArea.innerHTML = `<div class="word-prob-text">${currentWordProblem}</div>`;
+                sInputArea.classList.remove('hidden');
+                sInputArea.innerHTML = `<input id="ans-speed" class="final-input active" style="max-width:200px; height:60px; font-size:2.5rem;" readonly onclick="focusId('ans-speed')" placeholder="?">`;
+                activeId = 'ans-speed';
+            }
+            else {
                 const s1 = String(num1);
                 let html = `<div class="v-grid">`;
                 html += `<div></div><div></div><div><div class="carry-circle" id="c1" onclick="focusId('c1')"></div></div><div><div class="carry-circle" id="c2" onclick="focusId('c2')"></div></div><div></div>`;
@@ -981,11 +1177,17 @@
             if(!activeId || isProcessing) return;
             const el = document.getElementById(activeId);
             
-            if(activeId === 'ans-speed') { 
-                if(el.value.length < 8) el.value = n + el.value; 
-            } 
-            else if(activeId.startsWith('step')) { 
-                if(el.value.length < 8) el.value += n; 
+            // 입력 모드 로직 분기
+            if(activeId === 'ans-speed' || activeId.startsWith('step')) { 
+                if(el.value.length < 8) {
+                    if(inputDirection === 'reverse') {
+                        // 기존 로직 (역순)
+                        el.value = n + el.value; 
+                    } else {
+                        // 순차 로직 (일반)
+                        el.value = el.value + n;
+                    }
+                }
             } 
             else if(activeId.startsWith('c')) { 
                 el.innerText = n; 
@@ -1000,10 +1202,18 @@
             const el = document.getElementById(activeId);
             
             if(activeId === 'ans-speed') {
-                el.value = el.value.slice(1);
+                if(inputDirection === 'reverse') {
+                    el.value = el.value.slice(1);
+                } else {
+                    el.value = el.value.slice(0, -1);
+                }
             }
             else if(activeId.startsWith('step')) {
-                el.value = el.value.slice(0, -1);
+                if(inputDirection === 'reverse') {
+                    el.value = el.value.slice(1);
+                } else {
+                    el.value = el.value.slice(0, -1);
+                }
             }
             else if(activeId.startsWith('c')) {
                 el.innerText = ''; 
@@ -1024,7 +1234,7 @@
             }
             
             let uVal;
-            if(mode === 'speed') { 
+            if(mode === 'speed' || mode === 'word') { 
                 uVal = parseInt(document.getElementById('ans-speed').value); 
             } 
             else { 
@@ -1043,8 +1253,17 @@
 
             const elapsedTime = (Date.now() - startTime) / 1000;
             const ok = (uVal === ans);
+            
+            // 히스토리 저장 (서술형은 문제 텍스트를 요약해서 저장)
+            let qText = "";
+            if (mode === 'word') {
+                qText = `${num1} ${op} ${num2} (서술형)`;
+            } else {
+                qText = `${num1} ${op} ${num2}`;
+            }
+
             history.push({ 
-                q: `${num1} ${op} ${num2}`, 
+                q: qText, 
                 a: ans, 
                 u: uVal, 
                 ok: ok,
@@ -1074,22 +1293,20 @@
             const username = currentUser ? currentUser.name : 'Guest Player';
             document.getElementById('result-username').innerText = username;
             
-            let modeText = mode === 'speed' ? '⚡ 스피드 모드' : '🐢 곱셈 단계별';
+            let modeText = '';
+            if (mode === 'speed') modeText = '⚡ 스피드 모드';
+            else if (mode === 'word') modeText = '📚 서술형 문제';
+            else modeText = '🐢 곱셈 단계별';
+
             let opText = '';
             if(mode === 'speed') {
-                if(speedOpType === 'random') {
-                    opText = '랜덤';
-                } else if(speedOpType === '+') {
-                    opText = '덧셈';
-                } else if(speedOpType === '-') {
-                    opText = '뺄셈';
-                } else if(speedOpType === '*') {
-                    opText = '곱셈';
-                } else if(speedOpType === '/') {
-                    opText = '나눗셈';
-                }
-                opText = ' • ' + opText;
+                if(speedOpType === 'random') opText = ' • 랜덤';
+                else if(speedOpType === '+') opText = ' • 덧셈';
+                else if(speedOpType === '-') opText = ' • 뺄셈';
+                else if(speedOpType === '*') opText = ' • 곱셈';
+                else if(speedOpType === '/') opText = ' • 나눗셈';
             }
+            
             document.getElementById('result-mode-info').innerText = `${modeText}${opText} • Lv.${difficulty}`;
             
             const totalTime = history.reduce((sum, h) => sum + h.time, 0);
