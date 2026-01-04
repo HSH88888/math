@@ -146,7 +146,7 @@
         /* 도구 컨테이너 (그림판 & 주판 탭 통합) */
         .tool-container {
             background: rgba(0,0,0,0.2); border-radius: 16px; padding: 10px;
-            margin-top: 10px; margin-bottom: 20px; display: block; flex-shrink: 0; /* 항상 표시 */
+            margin-top: 10px; margin-bottom: 20px; display: block; flex-shrink: 0;
             transition: all 0.3s ease;
         }
         
@@ -166,20 +166,20 @@
         .tool-btn:active { transform: scale(0.95); }
 
         /* 1. 그림판 */
-        .sketch-canvas { width: 100%; height: 200px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); cursor: crosshair; touch-action: none; display: none; } /* 기본 숨김 */
-        .color-palette { display: none; gap: 8px; margin-top: 8px; justify-content: center; } /* 기본 숨김 */
+        .sketch-canvas { width: 100%; height: 200px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); cursor: crosshair; touch-action: none; display: none; }
+        .color-palette { display: none; gap: 8px; margin-top: 8px; justify-content: center; }
         .color-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; }
         .color-btn.active { border-color: white; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
 
-        /* 2. 주판 공통 CSS */
+        /* 2. 주판 공통 CSS (다크모드 시인성 개선) */
         .abacus-box {
             width: 100%; height: 220px;
-            background: #2a2a2a; 
+            background: #2a2a2a; /* 너무 어둡지 않은 다크그레이 */
             border-radius: 12px;
-            border: 6px solid #666; 
+            border: 6px solid #666; /* 밝은 회색 테두리 */
             box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.1);
             padding: 5px; 
-            display: none; /* 기본 숨김 */
+            display: none; 
             position: relative; 
             overflow: hidden;
         }
@@ -208,23 +208,25 @@
             width: 6px; 
             height: 100%;
             background: #e0d0b0; /* 상아색 */
+            /* [수정] 기둥 양옆에 어두운 테두리를 줘서 흰색 테두리 주판알과 구분 */
+            border-left: 1px solid rgba(0,0,0,0.3);
+            border-right: 1px solid rgba(0,0,0,0.3);
             border-radius: 3px;
             position: relative; 
             display: flex; flex-direction: column; align-items: center;
-            box-shadow: inset 1px 0 2px rgba(0,0,0,0.2);
-            z-index: 15; /* 가로대 위 */
+            z-index: 15; 
         }
 
         /* 가로대 위의 점 (Dot) */
         .marker-dot {
             width: 5px; height: 5px;
-            background: #000; /* 검은색 점 */
+            background: #000; 
             border-radius: 50%;
             position: absolute;
-            top: 65px; /* 가로대 중앙 */
+            top: 65px; 
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 16; /* 기둥보다 위 */
+            z-index: 16; 
             box-shadow: 0 0 1px rgba(255,255,255,0.5);
         }
 
@@ -236,8 +238,10 @@
             position: absolute;
             transition: top 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: pointer; 
-            z-index: 20; /* 가장 위 */
-            box-shadow: 0 0 2px rgba(255,255,255,0.2), 2px 2px 5px rgba(0,0,0,0.5);
+            z-index: 20; 
+            /* [수정] 흰색 테두리 추가로 다크모드 가시성 확보 */
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6); /* 그림자 진하게 */
         }
         
         /* 주판1 전용 스타일 (기본 오렌지/검정) */
@@ -246,7 +250,8 @@
         }
         #abacus-box1 .bead-point {
             background: linear-gradient(to bottom, #555 0%, #111 100%);
-            box-shadow: 0 0 2px rgba(255,255,255,0.3), 2px 2px 5px rgba(0,0,0,0.5);
+            /* 검은알은 테두리를 더 밝게 */
+            border: 1px solid rgba(255, 255, 255, 0.9);
         }
 
         /* 주판알 위치 조정 */
@@ -261,9 +266,7 @@
         .bead-earth-3.active { top: 126px; }
         .bead-earth-4.active { top: 153px; }
 
-        /* 화면 표시 제어는 JS에서 처리 */
-
-        /* 정답 메시지 및 결과 화면 */
+        /* 결과 화면 */
         .msg-box { height: 30px; text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 10px; min-height: 40px;}
         .result-screen { display: none; text-align: center; }
         .score-big { font-size: 3rem; color: var(--accent-cyan); font-weight: bold; margin: 15px 0; text-shadow: 0 0 20px var(--accent-cyan); }
@@ -273,7 +276,7 @@
         .wrong-ans { color: #ff3b30; font-weight: bold; text-decoration: line-through; margin-right: 5px; }
         .correct-ans { color: var(--accent-cyan); font-weight: bold; }
 
-        /* 모달 (사용자 관리 / 피드백) */
+        /* 모달 스타일 */
         .hidden { display: none !important; }
         .modal { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:100; }
         .modal-box { background: #2b2742; padding: 20px; border-radius: 16px; width: 80%; }
@@ -420,10 +423,8 @@
                 <div class="color-btn" style="background: #34c759;" onclick="setDrawColor('#34c759')"></div>
             </div>
             
-            <div id="abacus-box1" class="abacus-box">
-                </div>
-            <div id="abacus-box2" class="abacus-box">
-                </div>
+            <div id="abacus-box1" class="abacus-box"></div>
+            <div id="abacus-box2" class="abacus-box"></div>
         </div>
     </div>
 
@@ -490,7 +491,7 @@
         // Firebase 설정
         const FIREBASE_CONFIG = { projectId: "my-board-1d56c" };
 
-        // 데이터
+        // 데이터 및 로직
         let mode = 'speed'; 
         let difficulty = 2; 
         let speedOpType = 'random'; 
@@ -504,44 +505,35 @@
         let isProcessing = false;
         let inputDirection = 'reverse';
         let currentWordProblem = "";
-        
-        // 도구 모드 (memo, abacus1, abacus2)
         let toolMode = 'memo';
-
-        // 그림판 변수
         let canvas, ctx;
         let isDrawing = false;
         let drawColor = 'white';
         let lastX = 0, lastY = 0;
 
-        // 서술형 템플릿 데이터
         const wordNames = ['철수', '영희', '민수', '지수', '호랑이', '토끼', '다람쥐', '선생님'];
         const wordItems = ['사과', '연필', '공책', '사탕', '지우개', '동전', '구슬', '장난감'];
         const wordUnits = ['개', '자루', '권', '개', '개', '원', '알', '개'];
 
-        // 초기화
         window.onload = function() {
             initCanvas();
-            renderAbacus1(); // 주판1 생성
-            renderAbacus2(); // 주판2 생성
+            renderAbacus1();
+            renderAbacus2();
             const storedUser = localStorage.getItem('mm_last_user');
             if(storedUser) selectUser(storedUser);
-            setToolMode('memo'); // 초기 모드 설정
+            setToolMode('memo');
         };
 
-        /* --- [도구 제어: 메모장 <-> 주판1 <-> 주판2] --- */
         function setToolMode(m) {
             toolMode = m;
             const tabMemo = document.getElementById('tab-memo');
             const tabAbacus1 = document.getElementById('tab-abacus1');
             const tabAbacus2 = document.getElementById('tab-abacus2');
-            
             const canvas = document.getElementById('sketch-canvas');
             const palette = document.getElementById('color-palette');
             const box1 = document.getElementById('abacus-box1');
             const box2 = document.getElementById('abacus-box2');
 
-            // 모든 탭 비활성화 및 컨테이너 숨김
             tabMemo.classList.remove('active');
             tabAbacus1.classList.remove('active');
             tabAbacus2.classList.remove('active');
@@ -550,7 +542,6 @@
             box1.style.display = 'none';
             box2.style.display = 'none';
 
-            // 선택된 모드 활성화 및 컨테이너 표시
             if (m === 'memo') {
                 tabMemo.classList.add('active');
                 canvas.style.display = 'block';
@@ -565,17 +556,11 @@
         }
 
         function clearTool() {
-            if (toolMode === 'memo') {
-                clearCanvas();
-            } else if (toolMode === 'abacus1') {
-                resetAbacus('abacus-box1');
-            } else if (toolMode === 'abacus2') {
-                resetAbacus('abacus-box2');
-            }
+            if (toolMode === 'memo') clearCanvas();
+            else if (toolMode === 'abacus1') resetAbacus('abacus-box1');
+            else if (toolMode === 'abacus2') resetAbacus('abacus-box2');
         }
 
-        /* --- [주판 로직] --- */
-        // 주판1 렌더링 (기존 오렌지/검정)
         function renderAbacus1() {
             const box = document.getElementById('abacus-box1');
             box.innerHTML = '';
@@ -586,10 +571,8 @@
                 const rod = document.createElement('div'); rod.className = 'rod';
                 const isMarker = (i === 2 || i === 5);
                 if (isMarker) { const dot = document.createElement('div'); dot.className = 'marker-dot'; rod.appendChild(dot); }
-                
                 const hBead = document.createElement('div'); hBead.className = 'bead bead-heaven';
                 hBead.onclick = function() { this.classList.toggle('active'); }; rod.appendChild(hBead);
-
                 for(let j=1; j<=4; j++) {
                     const eBead = document.createElement('div');
                     let beadClass = `bead bead-earth-${j}`;
@@ -601,51 +584,43 @@
             }
         }
 
-        // 주판2 렌더링 (알록달록 색상)
         function renderAbacus2() {
             const box = document.getElementById('abacus-box2');
             box.innerHTML = '';
             const inner = document.createElement('div'); inner.className = 'abacus-inner'; box.appendChild(inner);
             const beamFull = document.createElement('div'); beamFull.className = 'beam-full'; inner.appendChild(beamFull);
 
-            // 이미지 색상 패턴 정의
             const colors = [
-                ['#ff9f43', '#e67e22', '#d35400'], // 0: 주황
-                ['#ff3b30', '#c0392b', '#a93226'], // 1: 빨강
-                ['#00f2fe', '#007aff', '#0056b3'], // 2: 파랑
-                ['#ffffff', '#f0f0f0', '#dcdcdc'], // 3: 흰색
-                ['#ff3b30', '#c0392b', '#a93226'], // 4: 빨강
-                ['#ffcc00', '#f1c40f', '#d4ac0d'], // 5: 노랑
-                ['#34c759', '#2ecc71', '#27ae60']  // 6: 초록
+                ['#ff9f43', '#e67e22', '#d35400'], 
+                ['#ff3b30', '#c0392b', '#a93226'], 
+                ['#00f2fe', '#007aff', '#0056b3'], 
+                ['#ffffff', '#f0f0f0', '#dcdcdc'], 
+                ['#ff3b30', '#c0392b', '#a93226'], 
+                ['#ffcc00', '#f1c40f', '#d4ac0d'], 
+                ['#34c759', '#2ecc71', '#27ae60']
             ];
 
             for(let i=0; i<7; i++) {
                 const rod = document.createElement('div'); rod.className = 'rod';
-                
-                // 색상 그라데이션 생성
                 const col = colors[i % colors.length];
                 const bgStyle = `linear-gradient(to bottom, ${col[0]} 0%, ${col[1]} 40%, ${col[2]} 50%, ${col[0]} 60%, ${col[2]} 100%)`;
-                const shadowStyle = `0 0 2px rgba(255,255,255,0.2), 2px 2px 5px rgba(0,0,0,0.3)`;
-
+                
                 const hBead = document.createElement('div'); hBead.className = 'bead bead-heaven';
-                hBead.style.background = bgStyle; hBead.style.boxShadow = shadowStyle;
+                hBead.style.background = bgStyle; 
                 hBead.onclick = function() { this.classList.toggle('active'); }; rod.appendChild(hBead);
 
                 for(let j=1; j<=4; j++) {
                     const eBead = document.createElement('div');
                     eBead.className = `bead bead-earth-${j}`;
-                    eBead.style.background = bgStyle; eBead.style.boxShadow = shadowStyle;
+                    eBead.style.background = bgStyle; 
                     eBead.onclick = function() { this.classList.toggle('active'); }; rod.appendChild(eBead);
                 }
                 inner.appendChild(rod);
             }
         }
 
-        function resetAbacus(boxId) {
-            document.querySelectorAll(`#${boxId} .bead`).forEach(b => b.classList.remove('active'));
-        }
+        function resetAbacus(boxId) { document.querySelectorAll(`#${boxId} .bead`).forEach(b => b.classList.remove('active')); }
 
-        /* --- [그림판 로직] --- */
         function initCanvas() {
             canvas = document.getElementById('sketch-canvas');
             ctx = canvas.getContext('2d');
@@ -658,7 +633,6 @@
                 }
             };
             window.addEventListener('resize', resizeCanvas);
-            // 초기 로드 시 캔버스가 숨겨져 있어 크기가 0이 될 수 있으므로 setTimeout 사용
             setTimeout(resizeCanvas, 100);
             canvas.addEventListener('mousedown', startDrawing);
             canvas.addEventListener('mousemove', draw);
@@ -677,28 +651,22 @@
         function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
         function setDrawColor(color) { drawColor = color; ctx.strokeStyle = drawColor; document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); }
 
-        /* --- [게임 UI 및 로직] --- */
+        // [이하 기존 게임 로직 유지]
         function toggleOptions(m) { 
             mode = m; 
             const levelBox = document.getElementById('speed-levels');
             const speedOps = document.getElementById('speed-ops');
             const wordLabel = document.getElementById('label-word');
-
             speedOps.style.display = (m === 'speed') ? 'flex' : 'none';
             if (m === 'speed' || m === 'word') {
                 levelBox.style.display = 'flex';
                 if (m === 'speed') { speedOps.after(levelBox); levelBox.classList.remove('word-mode'); } 
                 else { wordLabel.after(levelBox); levelBox.classList.add('word-mode'); }
-            } else {
-                levelBox.style.display = 'none';
-            }
+            } else { levelBox.style.display = 'none'; }
         }
-
         function setLevel(lv) { difficulty = lv; document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('selected')); document.getElementById('lv' + lv).classList.add('selected'); }
         function setOpType(type) { speedOpType = type; document.querySelectorAll('.op-btn').forEach(b => b.classList.remove('selected')); let btnId = type === '+' ? 'op-plus' : (type === '-' ? 'op-minus' : (type === '*' ? 'op-mul' : (type === '/' ? 'op-div' : 'op-rand'))); document.getElementById(btnId).classList.add('selected'); }
         function setInputMode(dir) { inputDirection = dir; const normalBtn = document.getElementById('btn-mode-normal'); const reverseBtn = document.getElementById('btn-mode-reverse'); if (dir === 'normal') { normalBtn.classList.add('active'); reverseBtn.classList.remove('active'); } else { normalBtn.classList.remove('active'); reverseBtn.classList.add('active'); } }
-
-        // 사용자 관리 로직
         function openUserModal() { renderUserList(); document.getElementById('modal-login').classList.remove('hidden'); }
         function closeUserModal() { document.getElementById('modal-login').classList.add('hidden'); }
         function renderUserList() {
@@ -754,8 +722,6 @@
             }
             closeUserModal();
         }
-
-        // Firebase 피드백 로직
         function openFeedbackModal() { document.getElementById('modal-feedback').classList.remove('hidden'); loadFeedbacks(); }
         function closeFeedbackModal() { document.getElementById('modal-feedback').classList.add('hidden'); }
         async function loadFeedbacks() {
@@ -792,67 +758,52 @@
                 loadFeedbacks();
             } catch (error) { alert('등록 실패'); }
         }
-
-        // 게임 제어
         function goHome() { if(confirm("게임을 종료하고 홈으로 돌아가시겠습니까?")) location.reload(); }
         function restartSameLevel() {
             document.getElementById('screen-result').classList.add('hidden');
             document.getElementById('screen-game').classList.remove('hidden');
             history = []; qNum = 1; nextQ();
         }
-
         function startGame() {
             document.getElementById('screen-start').classList.add('hidden');
             document.getElementById('screen-game').classList.remove('hidden');
-            // 게임 시작 시 도구 컨테이너는 기본적으로 표시되고, setToolMode('memo')에 의해 메모장이 선택된 상태로 시작됨
-            
             setTimeout(() => {
                 const canvas = document.getElementById('sketch-canvas');
                 canvas.width = canvas.parentElement.clientWidth - 20;
                 canvas.height = 200;
                 ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 3; ctx.strokeStyle = drawColor;
             }, 100);
-
             nextQ();
         }
-
         function nextQ() {
             if(qNum > totalQ) { finish(); return; }
             isProcessing = false;
             document.getElementById('q-curr').innerText = qNum;
             document.getElementById('msg-box').innerText = '';
-            
             clearTool();
-            
             if (mode === 'word') genWordProb();
             else if (mode === 'step') genStepProb();
             else genProb();
-            
             clearInterval(timerInt);
             document.getElementById('timer').innerText = "0.0";
             startTime = Date.now();
             timerInt = setInterval(()=>{ document.getElementById('timer').innerText = ((Date.now()-startTime)/1000).toFixed(1); }, 100);
         }
-
         function rand(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
-
         function genWordProb() {
             const ops = ['+','-','*','/'];
             let chosenOp;
             if (difficulty <= 2) chosenOp = Math.random() < 0.8 ? ops[Math.floor(Math.random()*2)] : ops[2];
             else chosenOp = ops[Math.floor(Math.random()*ops.length)];
-
             let min, max;
             if(difficulty === 1) { min=2; max=15; }
             else if(difficulty === 2) { min=10; max=50; }
             else if(difficulty === 3) { min=50; max=500; }
             else { min=500; max=9000; }
-
             const name1 = wordNames[Math.floor(Math.random() * wordNames.length)];
             const name2 = wordNames[Math.floor(Math.random() * wordNames.length)];
             const item = wordItems[Math.floor(Math.random() * wordItems.length)];
             const unit = wordUnits[0];
-
             if (chosenOp === '+') {
                 num1 = rand(min, max); num2 = rand(min, max); ans = num1 + num2;
                 currentWordProblem = `${name1}는 ${item}을 ${num1}${unit} 가지고 있습니다. ${name2}가 ${item}을 ${num2}${unit} 더 주었습니다. ${name1}가 가진 ${item}은 모두 몇 ${unit}인가요?`; op = '+';
@@ -875,20 +826,16 @@
             }
             renderUI();
         }
-
         function genProb() {
             if(speedOpType === 'random') { const ops = ['+','-','*','/']; op = ops[Math.floor(Math.random()*ops.length)]; } else { op = speedOpType; }
             let min=1, max=9;
             if(difficulty === 2) { min=10; max=99; } if(difficulty === 3) { min=10; max=99; } if(difficulty === 4) { min=100; max=999; }
-
             if(op === '+') { num1 = rand(min, max); num2 = rand(min, max); ans = num1 + num2; } 
             else if(op === '-') { num1 = rand(min, max); num2 = rand(min, max); if(num1 < num2) [num1, num2] = [num2, num1]; ans = num1 - num2; } 
             else if(op === '*') { num1 = (difficulty===1)?rand(2,9):(difficulty===2?rand(10,99):(difficulty===3?rand(10,99):rand(100,999))); num2 = rand(2,9); ans = num1 * num2; } 
             else { num2 = rand(2, 9); ans = rand(2, difficulty*5); num1 = ans * num2; }
             renderUI();
         }
-
-        // 단계별 문제 생성
         function genStepProb() {
             op = '*';
             num1 = rand(100, 999);
@@ -896,13 +843,11 @@
             ans = num1 * num2;
             renderUI();
         }
-
         function renderUI() {
             const pArea = document.getElementById('problem-area');
             const bArea = document.getElementById('bottom-area');
             const sInputArea = document.getElementById('speed-input-container');
             pArea.innerHTML = ''; bArea.innerHTML = ''; sInputArea.innerHTML = ''; sInputArea.classList.add('hidden');
-
             if(mode === 'speed') {
                 let sym = op==='*'?'×':(op==='/'?'÷':op);
                 pArea.innerHTML = `<div class="speed-text">${num1}<span class="speed-op">${sym}</span>${num2}</div>`;
@@ -916,7 +861,7 @@
                 sInputArea.innerHTML = `<input id="ans-speed" class="final-input active" style="max-width:200px; height:60px; font-size:2.5rem;" readonly onclick="focusId('ans-speed')" placeholder="?">`;
                 activeId = 'ans-speed';
             }
-            else { // Step mode UI
+            else {
                 const s1 = String(num1);
                 let html = `<div class="v-grid">`;
                 html += `<div></div><div></div><div><div class="carry-circle" id="c1" onclick="focusId('c1')"></div></div><div><div class="carry-circle" id="c2" onclick="focusId('c2')"></div></div><div></div>`;
@@ -926,7 +871,6 @@
                 for(let i=0; i<5; i++) { html += `<div class="final-cell-wrapper"><input id="ans-${i}" class="final-input" readonly onclick="focusId('ans-${i}')"></div>`; }
                 html += `</div>`;
                 pArea.innerHTML = html;
-
                 let stepHtml = `<div class="step-container">`;
                 const digits = s1.split('').reverse();
                 digits.forEach((d, i) => {
@@ -937,7 +881,6 @@
                 focusId('step-0');
             }
         }
-
         function focusId(id) {
             if(activeId) { 
                 const prev = document.getElementById(activeId); 
@@ -947,11 +890,9 @@
             const curr = document.getElementById(id); 
             if(curr) { curr.classList.add('active'); if(curr.classList.contains('carry-circle')) curr.style.background = 'rgba(255,255,255,0.2)'; }
         }
-
         function inputKey(n) {
             if(!activeId || isProcessing) return;
             const el = document.getElementById(activeId);
-            
             if(activeId === 'ans-speed' || activeId.startsWith('step')) { 
                 if(el.value.length < 8) {
                     el.value = (inputDirection === 'reverse') ? (n + el.value) : (el.value + n);
@@ -960,7 +901,6 @@
             else if(activeId.startsWith('c')) { el.innerText = n; } 
             else { el.value = n; }
         }
-
         function delKey() {
             if(!activeId || isProcessing) return;
             const el = document.getElementById(activeId);
@@ -970,17 +910,14 @@
             else if(activeId.startsWith('c')) { el.innerText = ''; }
             else { el.value = ''; }
         }
-
         function submitAns() {
             if(!activeId || isProcessing) return;
-            
             if(activeId.startsWith('step')) {
                 const idx = parseInt(activeId.split('-')[1]);
                 const next = `step-${idx+1}`;
                 if(document.getElementById(next)) focusId(next); else focusId('ans-4');
                 return;
             }
-            
             let uVal;
             if(mode === 'speed' || mode === 'word') { uVal = parseInt(document.getElementById('ans-speed').value); } 
             else { 
@@ -988,17 +925,13 @@
                 for(let i=0; i<5; i++) { const e = document.getElementById(`ans-${i}`); if(e) s += e.value; } 
                 uVal = parseInt(s); 
             }
-
             if(isNaN(uVal)) return;
-
             isProcessing = true;
             clearInterval(timerInt);
             const elapsedTime = (Date.now() - startTime) / 1000;
             const ok = (uVal === ans);
-            
             let qText = (mode === 'word') ? `${num1} ${op} ${num2} (서술형)` : `${num1} ${op} ${num2}`;
             history.push({ q: qText, a: ans, u: uVal, ok: ok, time: elapsedTime });
-
             if(ok) { 
                 document.getElementById('msg-box').innerText = "정답!"; document.getElementById('msg-box').style.color = "#00ff88"; 
                 setTimeout(()=>{ qNum++; nextQ(); }, 600); 
@@ -1007,31 +940,24 @@
                 setTimeout(()=>{ qNum++; nextQ(); }, 1200); 
             }
         }
-
         function finish() {
             clearInterval(timerInt);
             document.getElementById('screen-game').classList.add('hidden');
             document.getElementById('screen-result').classList.remove('hidden');
-            
             const correct = history.filter(h=>h.ok).length;
             document.getElementById('final-score').innerText = correct * 10 + '점';
-            
             const username = currentUser ? currentUser.name : 'Guest Player';
             document.getElementById('result-username').innerText = username;
             document.getElementById('result-mode-info').innerText = `${mode} Mode • Lv.${difficulty}`;
-            
             const totalTime = history.reduce((sum, h) => sum + h.time, 0);
             const avgTime = (totalTime / history.length).toFixed(1);
             const accuracyRate = ((correct / totalQ) * 100).toFixed(0);
-            
             document.getElementById('accuracy-rate').innerText = accuracyRate + '%';
             document.getElementById('avg-solve-time').innerText = avgTime + '초';
-            
             const tbody = document.getElementById('res-tbody'); tbody.innerHTML = '';
             history.forEach((h, i) => {
                 tbody.innerHTML += `<tr><td>${i+1}</td><td>${h.q.replace('*','×').replace('/','÷')}</td><td>${h.ok ? `<span class="correct-ans">${h.a}</span>` : `<span class="wrong-ans">${h.u}</span> / ${h.a}`}</td><td style="color:${h.ok?'var(--accent-cyan)':'#ff3b30'}">${h.ok?'O':'X'}</td></tr>`;
             });
-
             if(currentUser) {
                 let db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
                 if(!db[currentUser.name]) db[currentUser.name] = { games: 0, time: 0 };
@@ -1040,8 +966,6 @@
                 localStorage.setItem('mm_v24_db', JSON.stringify(db));
             }
         }
-        
-        // 키보드 이벤트
         document.addEventListener('keydown', (e) => {
             if(document.getElementById('screen-game').classList.contains('hidden')) return;
             if(e.key >= '0' && e.key <= '9') { e.preventDefault(); inputKey(parseInt(e.key)); }
