@@ -8,9 +8,7 @@
     <style>
         /* [테마: Deep Purple & Cyan] */
         :root {
-            /* 브라우저 시스템 다크모드 설정과 일치시킴 */
             color-scheme: dark;
-            
             --bg-color: #2b2742; 
             --card-bg: #1e1b33;
             --accent-cyan: #00f2fe; 
@@ -38,7 +36,6 @@
             justify-content: center;
             user-select: none;
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            /* 모바일에서 텍스트 크기 조정 방지 */
             -webkit-text-size-adjust: 100%;
         }
 
@@ -149,10 +146,9 @@
         /* 도구 컨테이너 (그림판 & 주판 탭 통합) */
         .tool-container {
             background: rgba(0,0,0,0.2); border-radius: 16px; padding: 10px;
-            margin-top: 10px; margin-bottom: 20px; display: none; flex-shrink: 0;
+            margin-top: 10px; margin-bottom: 20px; display: block; flex-shrink: 0; /* 항상 표시 */
             transition: all 0.3s ease;
         }
-        .tool-container.show { display: block; }
         
         .tool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         
@@ -170,23 +166,20 @@
         .tool-btn:active { transform: scale(0.95); }
 
         /* 1. 그림판 */
-        .sketch-canvas { width: 100%; height: 200px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); cursor: crosshair; touch-action: none; display: block; }
-        .color-palette { display: flex; gap: 8px; margin-top: 8px; justify-content: center; }
+        .sketch-canvas { width: 100%; height: 200px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); cursor: crosshair; touch-action: none; display: none; } /* 기본 숨김 */
+        .color-palette { display: none; gap: 8px; margin-top: 8px; justify-content: center; } /* 기본 숨김 */
         .color-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; }
         .color-btn.active { border-color: white; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
 
-        /* --- [수정됨] 2. 주판 CSS (블랙모드 가시성 개선) --- */
+        /* 2. 주판 공통 CSS */
         .abacus-box {
             width: 100%; height: 220px;
-            /* [수정] 배경을 완전 검정보다 밝게 하여 블랙모드에서 구분되게 함 */
             background: #2a2a2a; 
             border-radius: 12px;
-            /* [수정] 테두리를 밝은 회색으로 하여 배경과 분리 */
             border: 6px solid #666; 
-            /* [수정] 그림자 강화 */
             box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.1);
             padding: 5px; 
-            display: none; 
+            display: none; /* 기본 숨김 */
             position: relative; 
             overflow: hidden;
         }
@@ -222,57 +215,53 @@
             z-index: 15; /* 가로대 위 */
         }
 
-        /* 가로대 위의 점 (Dot) - z-index: 16 */
+        /* 가로대 위의 점 (Dot) */
         .marker-dot {
             width: 5px; height: 5px;
             background: #000; /* 검은색 점 */
             border-radius: 50%;
             position: absolute;
-            top: 65px; /* 가로대 중앙 (60px + 5px) */
+            top: 65px; /* 가로대 중앙 */
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 16; /* 기둥(15)보다 위 */
+            z-index: 16; /* 기둥보다 위 */
             box-shadow: 0 0 1px rgba(255,255,255,0.5);
         }
 
-        /* 주판알 (Bead) - z-index: 20 */
+        /* 주판알 (Bead) 공통 */
         .bead {
             width: 44px; height: 26px;
-            /* 입체감 있는 그라데이션 (밝은 부분 강조) */
-            background: linear-gradient(to bottom, #f39c12 0%, #d35400 100%);
             border-radius: 50%;
             transform: scaleX(1.05);
             position: absolute;
             transition: top 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: pointer; 
             z-index: 20; /* 가장 위 */
-            /* 검은 배경에서도 잘 보이도록 외곽선 효과(그림자) 추가 */
             box-shadow: 0 0 2px rgba(255,255,255,0.2), 2px 2px 5px rgba(0,0,0,0.5);
         }
         
-        /* 포인트 알 (검은색) - 밝은 회색 섞어서 가시성 확보 */
-        .bead-point {
+        /* 주판1 전용 스타일 (기본 오렌지/검정) */
+        #abacus-box1 .bead:not(.bead-point) {
+            background: linear-gradient(to bottom, #f39c12 0%, #d35400 100%);
+        }
+        #abacus-box1 .bead-point {
             background: linear-gradient(to bottom, #555 0%, #111 100%);
             box-shadow: 0 0 2px rgba(255,255,255,0.3), 2px 2px 5px rgba(0,0,0,0.5);
         }
 
-        /* 알 위치 조정 */
+        /* 주판알 위치 조정 */
         .bead-heaven { top: 8px; }
         .bead-heaven.active { top: 32px; }
-
         .bead-earth-1 { top: 85px; }
         .bead-earth-2 { top: 112px; } 
         .bead-earth-3 { top: 139px; }
         .bead-earth-4 { top: 166px; }
-
         .bead-earth-1.active { top: 72px; }
         .bead-earth-2.active { top: 99px; }
         .bead-earth-3.active { top: 126px; }
         .bead-earth-4.active { top: 153px; }
 
-        /* 화면 표시 제어 */
-        .show-memo .sketch-canvas { display: block; } .show-memo .color-palette { display: flex; } .show-memo .abacus-box { display: none; }
-        .show-abacus .sketch-canvas { display: none; } .show-abacus .color-palette { display: none; } .show-abacus .abacus-box { display: block; }
+        /* 화면 표시 제어는 JS에서 처리 */
 
         /* 정답 메시지 및 결과 화면 */
         .msg-box { height: 30px; text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 10px; min-height: 40px;}
@@ -410,11 +399,12 @@
             </div>
         </div>
 
-        <div class="tool-container show-memo" id="tool-container">
+        <div class="tool-container" id="tool-container">
             <div class="tool-header">
                 <div class="tool-tabs">
                     <span id="tab-memo" class="tab-item active" onclick="setToolMode('memo')">📝 메모장</span>
-                    <span id="tab-abacus" class="tab-item" onclick="setToolMode('abacus')">🧮 주판</span>
+                    <span id="tab-abacus1" class="tab-item" onclick="setToolMode('abacus1')">🧮 주판1</span>
+                    <span id="tab-abacus2" class="tab-item" onclick="setToolMode('abacus2')">🌈 주판2</span>
                 </div>
                 <div class="tool-controls">
                     <button class="tool-btn" onclick="clearTool()">지우기/초기화</button>
@@ -422,17 +412,18 @@
             </div>
             
             <canvas id="sketch-canvas" class="sketch-canvas"></canvas>
-            
-            <div id="abacus-box" class="abacus-box">
-                </div>
-
-            <div class="color-palette">
+            <div class="color-palette" id="color-palette">
                 <div class="color-btn active" style="background: white;" onclick="setDrawColor('white')"></div>
                 <div class="color-btn" style="background: #00f2fe;" onclick="setDrawColor('#00f2fe')"></div>
                 <div class="color-btn" style="background: #ff3b30;" onclick="setDrawColor('#ff3b30')"></div>
                 <div class="color-btn" style="background: #ffcc00;" onclick="setDrawColor('#ffcc00')"></div>
                 <div class="color-btn" style="background: #34c759;" onclick="setDrawColor('#34c759')"></div>
             </div>
+            
+            <div id="abacus-box1" class="abacus-box">
+                </div>
+            <div id="abacus-box2" class="abacus-box">
+                </div>
         </div>
     </div>
 
@@ -514,7 +505,7 @@
         let inputDirection = 'reverse';
         let currentWordProblem = "";
         
-        // 도구 모드 (memo 또는 abacus)
+        // 도구 모드 (memo, abacus1, abacus2)
         let toolMode = 'memo';
 
         // 그림판 변수
@@ -531,89 +522,127 @@
         // 초기화
         window.onload = function() {
             initCanvas();
-            renderAbacus();
+            renderAbacus1(); // 주판1 생성
+            renderAbacus2(); // 주판2 생성
             const storedUser = localStorage.getItem('mm_last_user');
             if(storedUser) selectUser(storedUser);
+            setToolMode('memo'); // 초기 모드 설정
         };
 
-        /* --- [도구 제어: 메모장 <-> 주판] --- */
+        /* --- [도구 제어: 메모장 <-> 주판1 <-> 주판2] --- */
         function setToolMode(m) {
             toolMode = m;
-            const container = document.getElementById('tool-container');
             const tabMemo = document.getElementById('tab-memo');
-            const tabAbacus = document.getElementById('tab-abacus');
+            const tabAbacus1 = document.getElementById('tab-abacus1');
+            const tabAbacus2 = document.getElementById('tab-abacus2');
+            
+            const canvas = document.getElementById('sketch-canvas');
+            const palette = document.getElementById('color-palette');
+            const box1 = document.getElementById('abacus-box1');
+            const box2 = document.getElementById('abacus-box2');
 
+            // 모든 탭 비활성화 및 컨테이너 숨김
+            tabMemo.classList.remove('active');
+            tabAbacus1.classList.remove('active');
+            tabAbacus2.classList.remove('active');
+            canvas.style.display = 'none';
+            palette.style.display = 'none';
+            box1.style.display = 'none';
+            box2.style.display = 'none';
+
+            // 선택된 모드 활성화 및 컨테이너 표시
             if (m === 'memo') {
-                container.classList.remove('show-abacus');
-                container.classList.add('show-memo');
                 tabMemo.classList.add('active');
-                tabAbacus.classList.remove('active');
-            } else {
-                container.classList.remove('show-memo');
-                container.classList.add('show-abacus');
-                tabMemo.classList.remove('active');
-                tabAbacus.classList.add('active');
+                canvas.style.display = 'block';
+                palette.style.display = 'flex';
+            } else if (m === 'abacus1') {
+                tabAbacus1.classList.add('active');
+                box1.style.display = 'block';
+            } else if (m === 'abacus2') {
+                tabAbacus2.classList.add('active');
+                box2.style.display = 'block';
             }
         }
 
         function clearTool() {
             if (toolMode === 'memo') {
                 clearCanvas();
-            } else {
-                resetAbacus();
+            } else if (toolMode === 'abacus1') {
+                resetAbacus('abacus-box1');
+            } else if (toolMode === 'abacus2') {
+                resetAbacus('abacus-box2');
             }
         }
 
         /* --- [주판 로직] --- */
-        function renderAbacus() {
-            const box = document.getElementById('abacus-box');
+        // 주판1 렌더링 (기존 오렌지/검정)
+        function renderAbacus1() {
+            const box = document.getElementById('abacus-box1');
             box.innerHTML = '';
-            
-            const inner = document.createElement('div');
-            inner.className = 'abacus-inner';
-            box.appendChild(inner);
+            const inner = document.createElement('div'); inner.className = 'abacus-inner'; box.appendChild(inner);
+            const beamFull = document.createElement('div'); beamFull.className = 'beam-full'; inner.appendChild(beamFull);
 
-            // 흰색 가로대
-            const beamFull = document.createElement('div');
-            beamFull.className = 'beam-full';
-            inner.appendChild(beamFull);
-
-            // 7열 주판 생성
             for(let i=0; i<7; i++) {
-                const rod = document.createElement('div');
-                rod.className = 'rod';
-                
-                // 마커(점) 표시 (index 2, 5) - z-index 문제 해결을 위해 rod 내부에 있지만 css로 띄움
+                const rod = document.createElement('div'); rod.className = 'rod';
                 const isMarker = (i === 2 || i === 5);
-                if (isMarker) {
-                    const dot = document.createElement('div');
-                    dot.className = 'marker-dot';
-                    rod.appendChild(dot);
-                }
+                if (isMarker) { const dot = document.createElement('div'); dot.className = 'marker-dot'; rod.appendChild(dot); }
+                
+                const hBead = document.createElement('div'); hBead.className = 'bead bead-heaven';
+                hBead.onclick = function() { this.classList.toggle('active'); }; rod.appendChild(hBead);
 
-                // 윗알
-                const hBead = document.createElement('div');
-                hBead.className = 'bead bead-heaven';
-                hBead.onclick = function() { this.classList.toggle('active'); };
-                rod.appendChild(hBead);
-
-                // 아랫알
                 for(let j=1; j<=4; j++) {
                     const eBead = document.createElement('div');
                     let beadClass = `bead bead-earth-${j}`;
-                    if (isMarker && j === 1) {
-                        beadClass += ' bead-point';
-                    }
+                    if (isMarker && j === 1) beadClass += ' bead-point';
                     eBead.className = beadClass;
-                    eBead.onclick = function() { this.classList.toggle('active'); };
-                    rod.appendChild(eBead);
+                    eBead.onclick = function() { this.classList.toggle('active'); }; rod.appendChild(eBead);
                 }
                 inner.appendChild(rod);
             }
         }
 
-        function resetAbacus() {
-            document.querySelectorAll('.bead').forEach(b => b.classList.remove('active'));
+        // 주판2 렌더링 (알록달록 색상)
+        function renderAbacus2() {
+            const box = document.getElementById('abacus-box2');
+            box.innerHTML = '';
+            const inner = document.createElement('div'); inner.className = 'abacus-inner'; box.appendChild(inner);
+            const beamFull = document.createElement('div'); beamFull.className = 'beam-full'; inner.appendChild(beamFull);
+
+            // 이미지 색상 패턴 정의
+            const colors = [
+                ['#ff9f43', '#e67e22', '#d35400'], // 0: 주황
+                ['#ff3b30', '#c0392b', '#a93226'], // 1: 빨강
+                ['#00f2fe', '#007aff', '#0056b3'], // 2: 파랑
+                ['#ffffff', '#f0f0f0', '#dcdcdc'], // 3: 흰색
+                ['#ff3b30', '#c0392b', '#a93226'], // 4: 빨강
+                ['#ffcc00', '#f1c40f', '#d4ac0d'], // 5: 노랑
+                ['#34c759', '#2ecc71', '#27ae60']  // 6: 초록
+            ];
+
+            for(let i=0; i<7; i++) {
+                const rod = document.createElement('div'); rod.className = 'rod';
+                
+                // 색상 그라데이션 생성
+                const col = colors[i % colors.length];
+                const bgStyle = `linear-gradient(to bottom, ${col[0]} 0%, ${col[1]} 40%, ${col[2]} 50%, ${col[0]} 60%, ${col[2]} 100%)`;
+                const shadowStyle = `0 0 2px rgba(255,255,255,0.2), 2px 2px 5px rgba(0,0,0,0.3)`;
+
+                const hBead = document.createElement('div'); hBead.className = 'bead bead-heaven';
+                hBead.style.background = bgStyle; hBead.style.boxShadow = shadowStyle;
+                hBead.onclick = function() { this.classList.toggle('active'); }; rod.appendChild(hBead);
+
+                for(let j=1; j<=4; j++) {
+                    const eBead = document.createElement('div');
+                    eBead.className = `bead bead-earth-${j}`;
+                    eBead.style.background = bgStyle; eBead.style.boxShadow = shadowStyle;
+                    eBead.onclick = function() { this.classList.toggle('active'); }; rod.appendChild(eBead);
+                }
+                inner.appendChild(rod);
+            }
+        }
+
+        function resetAbacus(boxId) {
+            document.querySelectorAll(`#${boxId} .bead`).forEach(b => b.classList.remove('active'));
         }
 
         /* --- [그림판 로직] --- */
@@ -629,7 +658,8 @@
                 }
             };
             window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
+            // 초기 로드 시 캔버스가 숨겨져 있어 크기가 0이 될 수 있으므로 setTimeout 사용
+            setTimeout(resizeCanvas, 100);
             canvas.addEventListener('mousedown', startDrawing);
             canvas.addEventListener('mousemove', draw);
             canvas.addEventListener('mouseup', stopDrawing);
@@ -774,8 +804,7 @@
         function startGame() {
             document.getElementById('screen-start').classList.add('hidden');
             document.getElementById('screen-game').classList.remove('hidden');
-            document.getElementById('tool-container').style.display = 'block';
-            history = []; qNum = 1;
+            // 게임 시작 시 도구 컨테이너는 기본적으로 표시되고, setToolMode('memo')에 의해 메모장이 선택된 상태로 시작됨
             
             setTimeout(() => {
                 const canvas = document.getElementById('sketch-canvas');
