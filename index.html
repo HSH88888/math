@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Math Master V25 - 7-Column Keypad</title>
+    <title>Math Master V25 - Abacus Integration</title>
     <style>
         /* [테마: Deep Purple & Cyan] */
         :root {
@@ -21,10 +21,7 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html {
-            height: 100%;
-            overflow: hidden;
-        }
+        html { height: 100%; overflow: hidden; }
 
         body {
             font-family: var(--font-main);
@@ -36,55 +33,32 @@
             align-items: center;
             justify-content: center;
             user-select: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         }
 
         .app-container {
-            width: 100%;
-            max-width: 480px;
-            height: 100%;
-            max-height: 900px;
+            width: 100%; max-width: 480px; height: 100%; max-height: 900px;
             background: linear-gradient(180deg, #363255 0%, #1e1b33 100%);
             border-radius: 24px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            position: relative;
-            overflow-y: auto;
-            overflow-x: hidden;
+            display: flex; flex-direction: column; padding: 20px;
+            position: relative; overflow-y: auto; overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
         }
         .app-container::-webkit-scrollbar { display: none; }
         
         @media (max-width: 600px), (max-height: 800px) {
-            .app-container {
-                max-width: 100%;
-                max-height: 100%;
-                border-radius: 0;
-                padding: 15px 15px 25px 15px;
-            }
+            .app-container { max-width: 100%; max-height: 100%; border-radius: 0; padding: 15px 15px 25px 15px; }
         }
 
         /* [시작 화면] */
         .title-area { text-align: center; margin-top: 20px; margin-bottom: 20px; flex-shrink: 0; }
         .main-title { 
             font-size: 2.5rem; font-weight: 900; color: white; 
-            text-shadow: 0 0 20px rgba(0, 242, 254, 0.8);
-            margin: 0; 
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.8); margin: 0; 
         }
         .sub-title { color: var(--text-gray); margin-top: 5px; font-size: 0.9rem; }
         
-        @media (max-width: 600px), (max-height: 800px) {
-            .title-area { margin-top: 10px; margin-bottom: 15px; }
-            .main-title { font-size: 2rem; }
-            .sub-title { font-size: 0.8rem; }
-        }
-
         .user-bar { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-shrink: 0; }
         .user-name { font-weight: bold; color: var(--accent-cyan); font-size: 1.1rem; }
         .btn-change { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 20px; padding: 5px 15px; font-size: 0.8rem; cursor: pointer; }
@@ -92,24 +66,11 @@
         .mode-box { background: rgba(0,0,0,0.25); border-radius: 16px; padding: 15px; margin-bottom: 15px; flex-shrink: 0; }
         .box-title { color: var(--accent-cyan); font-weight: 800; margin-bottom: 12px; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; }
         
-        @media (max-width: 600px), (max-height: 800px) {
-            .user-bar { padding: 8px 15px; margin-bottom: 10px; }
-            .user-name { font-size: 1rem; }
-            .mode-box { padding: 12px; margin-bottom: 10px; }
-            .box-title { margin-bottom: 8px; font-size: 0.8rem; }
-        }
-        
         .radio-option { display: flex; align-items: flex-start; margin-bottom: 10px; cursor: pointer; }
         .radio-option input { margin-top: 5px; margin-right: 15px; accent-color: var(--accent-cyan); transform: scale(1.3); }
         .opt-title { font-size: 1.1rem; font-weight: bold; color: white; margin-bottom: 4px; }
         .opt-desc { font-size: 0.9rem; color: var(--text-gray); line-height: 1.4; }
         
-        @media (max-width: 600px), (max-height: 800px) {
-            .radio-option { margin-bottom: 10px; }
-            .opt-title { font-size: 1rem; margin-bottom: 2px; }
-            .opt-desc { font-size: 0.8rem; line-height: 1.3; }
-        }
-
         /* 연산 버튼 */
         .op-select { margin-left: 35px; margin-bottom: 15px; display: flex; gap: 8px; }
         .op-btn { 
@@ -124,26 +85,11 @@
         .level-select { margin-left: 35px; margin-bottom: 20px; display: flex; gap: 8px; }
         .lvl-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
         .lvl-btn.selected { background: var(--accent-purple); color: white; border-color: var(--accent-purple); font-weight: bold; }
-        
         .level-select.word-mode .lvl-btn.selected { background: var(--accent-orange); border-color: var(--accent-orange); color: black; }
 
         .btn-start { width: 100%; padding: 18px; border-radius: 30px; background: var(--accent-cyan); color: #000; font-size: 1.3rem; font-weight: 900; border: none; cursor: pointer; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); margin-top: 20px; margin-bottom: 10px; }
-
-        .btn-feedback { 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: 20px; 
-            background: rgba(94,92,230,0.2); 
-            border: 1px solid var(--accent-purple);
-            color: var(--accent-purple); 
-            font-size: 0.9rem; 
-            font-weight: bold; 
-            cursor: pointer; 
-            margin-top: 10px;
-        }
-        .btn-feedback:hover {
-            background: rgba(94,92,230,0.3);
-        }
+        .btn-feedback { width: 100%; padding: 12px; border-radius: 20px; background: rgba(94,92,230,0.2); border: 1px solid var(--accent-purple); color: var(--accent-purple); font-size: 0.9rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-feedback:hover { background: rgba(94,92,230,0.3); }
 
         /* [게임 화면] */
         .game-header { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: 20px; }
@@ -161,20 +107,12 @@
         .speed-text { font-size: 3.5rem; font-weight: bold; margin-bottom: 5px; line-height: 1; }
         .speed-op { color: #ff3b30; margin: 0 15px; }
         
-        .word-prob-text {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            text-align: center;
-            color: white;
-            word-break: keep-all;
-            margin-bottom: 20px;
-        }
-        @media (max-width: 600px) {
-            .word-prob-text { font-size: 1.1rem; }
-        }
+        .word-prob-text { font-size: 1.3rem; line-height: 1.6; text-align: center; color: white; word-break: keep-all; margin-bottom: 20px; }
+        @media (max-width: 600px) { .word-prob-text { font-size: 1.1rem; } }
 
         .speed-input-area { width: 100%; display: flex; justify-content: center; margin-top: 10px; } 
 
+        /* 세로식(단계별) 스타일 */
         .step-container { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px; }
         .step-row { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: #ccc; }
         .step-input { width: 80px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid #555; border-radius: 10px; text-align: center; color: white; font-size: 1.2rem; font-weight: bold; outline: none; }
@@ -191,150 +129,142 @@
         .final-input::placeholder { color: rgba(255,255,255,0.2); font-size: 1rem; font-weight: normal; }
 
         /* 키패드 영역 */
-        .numpad-container {
-            margin-top: 15px;
-            width: 100%;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
-
-        /* 7열 키패드 (모드 버튼 포함) 
-           첫 번째 열(모드 버튼)은 조금 넓게(1.3fr), 나머지 숫자키는 균등하게(1fr)
-        */
-        .numpad { 
-            display: grid; 
-            grid-template-columns: 1.3fr repeat(6, 1fr); 
-            gap: 5px; 
-            width: 100%;
-        }
-        
-        .key { 
-            height: 50px; 
-            background: rgba(255,255,255,0.1); 
-            border: none; 
-            border-radius: 10px; 
-            color: white; 
-            font-size: 1.3rem; 
-            font-weight: bold; 
-            cursor: pointer;
-            touch-action: manipulation;
-            padding: 0;
-        }
+        .numpad-container { margin-top: 15px; width: 100%; margin-bottom: 15px; flex-shrink: 0; }
+        .numpad { display: grid; grid-template-columns: 1.3fr repeat(6, 1fr); gap: 5px; width: 100%; }
+        .key { height: 50px; background: rgba(255,255,255,0.1); border: none; border-radius: 10px; color: white; font-size: 1.3rem; font-weight: bold; cursor: pointer; touch-action: manipulation; padding: 0; }
         .key:active { background: rgba(255,255,255,0.3); transform: scale(0.95); }
-        .key-ent { 
-            background: var(--accent-cyan); 
-            color: #000; 
-        }
-        .key-del { 
-            color: #ff3b30; 
-        }
+        .key-ent { background: var(--accent-cyan); color: #000; }
+        .key-del { color: #ff3b30; }
 
-        /* 모드 선택 버튼 (키패드 내 포함) */
-        .mode-btn {
-            height: 50px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid #555;
-            border-radius: 10px;
-            color: #777;
-            font-size: 0.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.2;
-            text-align: center;
-            transition: all 0.2s;
-            padding: 0 4px;
+        .mode-btn { height: 50px; background: rgba(255,255,255,0.05); border: 1px solid #555; border-radius: 10px; color: #777; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1.2; text-align: center; transition: all 0.2s; padding: 0 4px; }
+        .mode-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0, 242, 254, 0.1); box-shadow: 0 0 10px rgba(0, 242, 254, 0.1); }
+        @media (max-width: 400px) { .numpad { gap: 3px; } .key { font-size: 1.1rem; border-radius: 8px; } .mode-btn { font-size: 0.75rem; border-radius: 8px; } }
+
+        /* 도구 컨테이너 (그림판 & 주판 탭 통합) */
+        .tool-container {
+            background: rgba(0,0,0,0.2); border-radius: 16px; padding: 10px;
+            margin-top: 10px; margin-bottom: 20px; display: none; flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .tool-container.show { display: block; }
+        
+        .tool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        
+        /* 탭 스위치 스타일 */
+        .tool-tabs { display: flex; gap: 15px; }
+        .tab-item { 
+            color: #777; font-size: 0.95rem; font-weight: bold; cursor: pointer; 
+            padding-bottom: 2px; border-bottom: 2px solid transparent; transition: all 0.2s;
+        }
+        .tab-item.active { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+        .tab-item:hover { color: white; }
+
+        .tool-controls { display: flex; gap: 8px; }
+        .tool-btn { padding: 5px 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+        .tool-btn:active { transform: scale(0.95); }
+
+        /* 1. 그림판 */
+        .sketch-canvas { width: 100%; height: 200px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); cursor: crosshair; touch-action: none; display: block; }
+        .color-palette { display: flex; gap: 8px; margin-top: 8px; justify-content: center; }
+        .color-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; }
+        .color-btn.active { border-color: white; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        /* --- [수정됨] 2. 주판 CSS (밸런스 및 레이어 순서 완벽 해결) --- */
+        .abacus-box {
+            width: 100%; height: 220px;
+            background: #222; /* 검은색 무광 프레임 */
+            border-radius: 12px;
+            border: 6px solid #111;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.3);
+            padding: 5px; 
+            display: none; 
+            position: relative; 
+            overflow: hidden;
         }
         
-        /* 활성화된 모드 버튼 스타일 */
-        .mode-btn.active {
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
-            background: rgba(0, 242, 254, 0.1);
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);
+        .abacus-inner {
+            display: flex; justify-content: space-evenly; 
+            height: 100%; width: 100%; align-items: center; 
+            position: relative; z-index: 1;
         }
 
-        /* 모바일 최적화: 폰트 사이즈 조정 */
-        @media (max-width: 400px) {
-            .numpad { gap: 3px; }
-            .key { font-size: 1.1rem; border-radius: 8px; }
-            .mode-btn { font-size: 0.75rem; border-radius: 8px; }
+        /* 흰색 가로대 (Beam) - z-index: 10 */
+        .beam-full {
+            position: absolute;
+            top: 60px;
+            left: 0; right: 0;
+            height: 10px; /* 두께 살짝 줄여서 세련되게 */
+            background: #eee;
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #999;
+            z-index: 10; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        /* 그림판 */
-        .sketch-container {
-            background: rgba(0,0,0,0.2);
-            border-radius: 16px;
-            padding: 10px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            display: none;
-            flex-shrink: 0;
+        /* 기둥 (Rod) - z-index: 15 (가로대보다 높게 설정하여 점이 보이도록 함) */
+        .rod {
+            width: 6px; 
+            height: 100%;
+            background: #e0d0b0; /* 상아색 */
+            border-radius: 3px;
+            position: relative; 
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: inset 1px 0 2px rgba(0,0,0,0.2);
+            z-index: 15; /* [중요] 가로대(10)보다 위에 배치 */
         }
-        .sketch-container.show {
-            display: block;
-        }
-        .sketch-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .sketch-title {
-            color: var(--accent-cyan);
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-        .sketch-controls {
-            display: flex;
-            gap: 8px;
-        }
-        .sketch-btn {
-            padding: 5px 12px;
-            border-radius: 8px;
-            border: none;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 0.8rem;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .sketch-btn:active {
-            transform: scale(0.95);
-        }
-        .sketch-canvas {
-            width: 100%;
-            height: 200px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.1);
-            cursor: crosshair;
-            touch-action: none;
-        }
-        .color-palette {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            justify-content: center;
-        }
-        .color-btn {
-            width: 30px;
-            height: 30px;
+
+        /* 가로대 위의 점 (Dot) - z-index: 16 */
+        .marker-dot {
+            width: 5px; height: 5px;
+            background: #000; /* 검은색 점 */
             border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.3);
-            cursor: pointer;
-        }
-        .color-btn.active {
-            border-color: white;
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            position: absolute;
+            top: 65px; /* 가로대 중앙 (60px + 5px) */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 16; /* 기둥(15)보다 위 */
+            box-shadow: 0 0 1px rgba(255,255,255,0.5);
         }
 
-        /* 정답 메시지 영역 */
+        /* 주판알 (Bead) - z-index: 20 */
+        .bead {
+            width: 44px; height: 26px;
+            /* 입체감 있는 그라데이션 */
+            background: linear-gradient(to bottom, #e67e22 0%, #ff9f43 40%, #d35400 50%, #e67e22 60%, #d35400 100%);
+            border-radius: 50%;
+            transform: scaleX(1.05);
+            position: absolute;
+            transition: top 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer; 
+            z-index: 20; /* 가장 위 */
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+        }
+        
+        /* 포인트 알 (검은색) */
+        .bead-point {
+            background: linear-gradient(to bottom, #444 0%, #666 40%, #222 50%, #444 60%, #111 100%);
+        }
+
+        /* 알 위치 조정 (가로대 top: 60px, height: 10px 기준) */
+        .bead-heaven { top: 8px; }
+        .bead-heaven.active { top: 32px; } /* 가로대 바로 위 */
+
+        .bead-earth-1 { top: 85px; }
+        .bead-earth-2 { top: 112px; } 
+        .bead-earth-3 { top: 139px; }
+        .bead-earth-4 { top: 166px; }
+
+        .bead-earth-1.active { top: 72px; } /* 가로대 바로 아래 */
+        .bead-earth-2.active { top: 99px; }
+        .bead-earth-3.active { top: 126px; }
+        .bead-earth-4.active { top: 153px; }
+
+        /* 화면 표시 제어 */
+        .show-memo .sketch-canvas { display: block; } .show-memo .color-palette { display: flex; } .show-memo .abacus-box { display: none; }
+        .show-abacus .sketch-canvas { display: none; } .show-abacus .color-palette { display: none; } .show-abacus .abacus-box { display: block; }
+
+        /* 정답 메시지 및 결과 화면 */
         .msg-box { height: 30px; text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 10px; min-height: 40px;}
-
-        /* 결과 화면 */
         .result-screen { display: none; text-align: center; }
         .score-big { font-size: 3rem; color: var(--accent-cyan); font-weight: bold; margin: 15px 0; text-shadow: 0 0 20px var(--accent-cyan); }
         .res-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; }
@@ -343,73 +273,30 @@
         .wrong-ans { color: #ff3b30; font-weight: bold; text-decoration: line-through; margin-right: 5px; }
         .correct-ans { color: var(--accent-cyan); font-weight: bold; }
 
+        /* 모달 (사용자 관리 / 피드백) */
         .hidden { display: none !important; }
         .modal { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:100; }
         .modal-box { background: #2b2742; padding: 20px; border-radius: 16px; width: 80%; }
         
         .user-list { margin: 15px 0; max-height: 200px; overflow-y: auto; }
-        .user-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; cursor: pointer; border: 1px solid transparent;
-        }
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; cursor: pointer; border: 1px solid transparent; }
         .user-item.active { border-color: var(--accent-cyan); background: rgba(0, 242, 254, 0.1); }
         .user-item:active { transform: scale(0.98); }
         .del-user-btn { color: #ff3b30; padding: 5px 10px; border: none; background: transparent; font-size: 1.2rem; cursor: pointer; }
 
         .new-user-form { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
         .modal-input { flex: 1; padding: 12px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 1rem; }
-        .modal-textarea { 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: 10px; 
-            border: none; 
-            background: rgba(255,255,255,0.1); 
-            color: white; 
-            font-size: 0.9rem;
-            min-height: 100px;
-            resize: vertical;
-            font-family: var(--font-main);
-        }
+        .modal-textarea { width: 100%; padding: 12px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 0.9rem; min-height: 100px; resize: vertical; font-family: var(--font-main); }
         .modal-btn { padding: 0 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
         .btn-add { background: var(--accent-cyan); color: black; }
         .btn-close { width: 100%; padding: 12px; background: #444; color: white; border:none; border-radius:10px; margin-top:10px; font-weight:bold; cursor:pointer;}
         
-        .feedback-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin: 15px 0;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-        }
-        .feedback-item {
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 3px solid var(--accent-cyan);
-        }
-        .feedback-author {
-            color: var(--accent-cyan);
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-        .feedback-date {
-            color: #888;
-            font-size: 0.75rem;
-        }
-        .feedback-body {
-            color: #ddd;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            margin-top: 8px;
-        }
-        .loading {
-            text-align: center;
-            color: #888;
-            padding: 20px;
-        }
+        .feedback-list { max-height: 300px; overflow-y: auto; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .feedback-item { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid var(--accent-cyan); }
+        .feedback-author { color: var(--accent-cyan); font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; }
+        .feedback-date { color: #888; font-size: 0.75rem; }
+        .feedback-body { color: #ddd; font-size: 0.85rem; line-height: 1.4; margin-top: 8px; }
+        .loading { text-align: center; color: #888; padding: 20px; }
     </style>
 </head>
 <body>
@@ -417,7 +304,7 @@
     <div class="app-container" id="screen-start">
         <div class="title-area">
             <h1 class="main-title">MATH V25</h1>
-            <div class="sub-title">Word Problem Edition</div>
+            <div class="sub-title">Abacus & Notepad Edition</div>
         </div>
 
         <div class="user-bar">
@@ -431,7 +318,7 @@
             <label class="radio-option">
                 <input type="radio" name="mode" value="speed" checked onclick="toggleOptions('speed')">
                 <div>
-                    <div class="opt-title">⚡ 스피드 모드 (빠른 연산)</div>
+                    <div class="opt-title">⚡ 스피드 모드</div>
                     <div class="opt-desc">원하는 연산을 선택하여 빠르게 풉니다.</div>
                 </div>
             </label>
@@ -454,7 +341,7 @@
             <label class="radio-option" id="label-word">
                 <input type="radio" name="mode" value="word" onclick="toggleOptions('word')">
                 <div>
-                    <div class="opt-title">📚 서술형 문제 (문장제)</div>
+                    <div class="opt-title">📚 서술형 문제</div>
                     <div class="opt-desc">문제를 읽고 식을 세워 정답을 구하세요.</div>
                 </div>
             </label>
@@ -512,14 +399,22 @@
             </div>
         </div>
 
-        <div class="sketch-container" id="sketch-container">
-            <div class="sketch-header">
-                <span class="sketch-title">📝 메모장</span>
-                <div class="sketch-controls">
-                    <button class="sketch-btn" onclick="clearCanvas()">지우기</button>
+        <div class="tool-container show-memo" id="tool-container">
+            <div class="tool-header">
+                <div class="tool-tabs">
+                    <span id="tab-memo" class="tab-item active" onclick="setToolMode('memo')">📝 메모장</span>
+                    <span id="tab-abacus" class="tab-item" onclick="setToolMode('abacus')">🧮 주판</span>
+                </div>
+                <div class="tool-controls">
+                    <button class="tool-btn" onclick="clearTool()">지우기/초기화</button>
                 </div>
             </div>
+            
             <canvas id="sketch-canvas" class="sketch-canvas"></canvas>
+            
+            <div id="abacus-box" class="abacus-box">
+                </div>
+
             <div class="color-palette">
                 <div class="color-btn active" style="background: white;" onclick="setDrawColor('white')"></div>
                 <div class="color-btn" style="background: #00f2fe;" onclick="setDrawColor('#00f2fe')"></div>
@@ -535,7 +430,7 @@
             <button class="btn-home" onclick="location.reload()" style="font-size:1.8rem;">🏠</button>
             <div style="text-align:center;">
                 <h1 class="main-title" style="font-size:2rem; margin:0;">REPORT</h1>
-                <div style="color:var(--text-gray); font-size:0.85rem; margin-top:5px;" id="result-mode-info">스피드 모드 • Lv.2</div>
+                <div style="color:var(--text-gray); font-size:0.85rem; margin-top:5px;" id="result-mode-info"></div>
             </div>
             <button class="btn-home" onclick="restartSameLevel()" style="font-size:1.8rem;">🔄</button>
         </div>
@@ -551,19 +446,11 @@
                 <div style="color:#888; font-size:0.75rem; margin-bottom:5px;">평균 시간</div>
                 <div style="color:var(--accent-purple); font-size:1.5rem; font-weight:bold;" id="avg-solve-time">0.0초</div>
             </div>
-            <div style="background:rgba(52,199,89,0.1); border:1px solid rgba(52,199,89,0.3); border-radius:12px; padding:12px; text-align:center;">
-                <div style="color:#888; font-size:0.75rem; margin-bottom:5px;">최고 속도</div>
-                <div style="color:#34c759; font-size:1.5rem; font-weight:bold;" id="fastest-time">0.0초</div>
-            </div>
-            <div style="background:rgba(255,204,0,0.1); border:1px solid rgba(255,204,0,0.3); border-radius:12px; padding:12px; text-align:center;">
-                <div style="color:#888; font-size:0.75rem; margin-bottom:5px;">총 플레이</div>
-                <div style="color:#ffcc00; font-size:1.5rem; font-weight:bold;" id="total-plays">1회</div>
-            </div>
         </div>
 
         <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:10px;">
             <table class="res-table">
-                <thead><tr><th width="8%">No</th><th width="35%">문제</th><th width="32%">내답 / 정답</th><th width="15%">시간</th><th width="10%">결과</th></tr></thead>
+                <thead><tr><th width="10%">No</th><th width="40%">문제</th><th width="30%">내답 / 정답</th><th width="20%">결과</th></tr></thead>
                 <tbody id="res-tbody"></tbody>
             </table>
         </div>
@@ -584,27 +471,22 @@
     <div id="modal-feedback" class="modal hidden">
         <div class="modal-box" style="max-width:400px;">
             <h3 style="color:var(--accent-cyan); margin-bottom:15px;">💬 피드백 게시판</h3>
-            
             <div class="feedback-list" id="feedback-list">
                 <div class="loading">피드백을 불러오는 중...</div>
             </div>
-            
             <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
                 <h4 style="color:var(--accent-purple); margin-bottom:10px; font-size:0.9rem;">새 피드백 작성</h4>
                 <input type="text" id="feedback-name" class="modal-input" placeholder="이름 (선택)" style="margin-bottom:8px;">
                 <textarea id="feedback-text" class="modal-textarea" placeholder="의견이나 건의사항을 자유롭게 작성해주세요!"></textarea>
                 <button onclick="submitFeedback()" class="modal-btn btn-add" style="width:100%; padding:10px; margin-top:8px;">작성하기</button>
             </div>
-            
             <button onclick="closeFeedbackModal()" class="btn-close">닫기</button>
         </div>
     </div>
 
     <script>
         // Firebase 설정
-        const FIREBASE_CONFIG = {
-            projectId: "my-board-1d56c"
-        };
+        const FIREBASE_CONFIG = { projectId: "my-board-1d56c" };
 
         // 데이터
         let mode = 'speed'; 
@@ -618,189 +500,175 @@
         let startTime, timerInt;
         let currentUser = null;
         let isProcessing = false;
-        
-        // 입력 모드 상태 (reverse: 역순, normal: 순차)
-        // 사용자가 처음에 편하게 느끼는 역순을 기본값으로 설정
         let inputDirection = 'reverse';
-
-        // 서술형 문제용 변수
         let currentWordProblem = "";
         
-        // 서술형 템플릿 데이터
-        const wordNames = ['철수', '영희', '민수', '지수', '호랑이', '토끼', '다람쥐', '선생님'];
-        const wordItems = ['사과', '연필', '공책', '사탕', '지우개', '동전', '구슬', '장난감'];
-        const wordUnits = ['개', '자루', '권', '개', '개', '원', '알', '개'];
+        // 도구 모드 (memo 또는 abacus)
+        let toolMode = 'memo';
 
         // 그림판 변수
         let canvas, ctx;
         let isDrawing = false;
         let drawColor = 'white';
-        let lastX = 0;
-        let lastY = 0;
+        let lastX = 0, lastY = 0;
 
-        // 그림판 초기화
+        // 서술형 템플릿 데이터
+        const wordNames = ['철수', '영희', '민수', '지수', '호랑이', '토끼', '다람쥐', '선생님'];
+        const wordItems = ['사과', '연필', '공책', '사탕', '지우개', '동전', '구슬', '장난감'];
+        const wordUnits = ['개', '자루', '권', '개', '개', '원', '알', '개'];
+
+        // 초기화
+        window.onload = function() {
+            initCanvas();
+            renderAbacus();
+            const storedUser = localStorage.getItem('mm_last_user');
+            if(storedUser) selectUser(storedUser);
+        };
+
+        /* --- [도구 제어: 메모장 <-> 주판] --- */
+        function setToolMode(m) {
+            toolMode = m;
+            const container = document.getElementById('tool-container');
+            const tabMemo = document.getElementById('tab-memo');
+            const tabAbacus = document.getElementById('tab-abacus');
+
+            if (m === 'memo') {
+                container.classList.remove('show-abacus');
+                container.classList.add('show-memo');
+                tabMemo.classList.add('active');
+                tabAbacus.classList.remove('active');
+            } else {
+                container.classList.remove('show-memo');
+                container.classList.add('show-abacus');
+                tabMemo.classList.remove('active');
+                tabAbacus.classList.add('active');
+            }
+        }
+
+        function clearTool() {
+            if (toolMode === 'memo') {
+                clearCanvas();
+            } else {
+                resetAbacus();
+            }
+        }
+
+        /* --- [주판 로직 수정됨] --- */
+        function renderAbacus() {
+            const box = document.getElementById('abacus-box');
+            box.innerHTML = '';
+            
+            const inner = document.createElement('div');
+            inner.className = 'abacus-inner';
+            box.appendChild(inner);
+
+            // 흰색 가로대
+            const beamFull = document.createElement('div');
+            beamFull.className = 'beam-full';
+            inner.appendChild(beamFull);
+
+            // 7열 주판 생성
+            for(let i=0; i<7; i++) {
+                const rod = document.createElement('div');
+                rod.className = 'rod';
+                
+                // 마커(점) 표시 (index 2, 5) - z-index 문제 해결을 위해 rod 내부에 있지만 css로 띄움
+                const isMarker = (i === 2 || i === 5);
+                if (isMarker) {
+                    const dot = document.createElement('div');
+                    dot.className = 'marker-dot';
+                    rod.appendChild(dot);
+                }
+
+                // 윗알
+                const hBead = document.createElement('div');
+                hBead.className = 'bead bead-heaven';
+                hBead.onclick = function() { this.classList.toggle('active'); };
+                rod.appendChild(hBead);
+
+                // 아랫알
+                for(let j=1; j<=4; j++) {
+                    const eBead = document.createElement('div');
+                    let beadClass = `bead bead-earth-${j}`;
+                    if (isMarker && j === 1) {
+                        beadClass += ' bead-point';
+                    }
+                    eBead.className = beadClass;
+                    eBead.onclick = function() { this.classList.toggle('active'); };
+                    rod.appendChild(eBead);
+                }
+                inner.appendChild(rod);
+            }
+        }
+
+        function resetAbacus() {
+            document.querySelectorAll('.bead').forEach(b => b.classList.remove('active'));
+        }
+
+        /* --- [그림판 로직] --- */
         function initCanvas() {
             canvas = document.getElementById('sketch-canvas');
             ctx = canvas.getContext('2d');
-            
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth - 24;
-            canvas.height = 200;
-            
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.lineWidth = 3;
-            
+            const resizeCanvas = () => {
+                const parent = canvas.parentElement;
+                if(parent) {
+                    canvas.width = parent.clientWidth - 20; 
+                    canvas.height = 200;
+                    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 3; ctx.strokeStyle = drawColor;
+                }
+            };
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
             canvas.addEventListener('mousedown', startDrawing);
             canvas.addEventListener('mousemove', draw);
             canvas.addEventListener('mouseup', stopDrawing);
             canvas.addEventListener('mouseout', stopDrawing);
-            
             canvas.addEventListener('touchstart', handleTouchStart);
             canvas.addEventListener('touchmove', handleTouchMove);
             canvas.addEventListener('touchend', stopDrawing);
         }
 
-        function startDrawing(e) {
-            isDrawing = true;
-            const rect = canvas.getBoundingClientRect();
-            lastX = e.clientX - rect.left;
-            lastY = e.clientY - rect.top;
-        }
+        function startDrawing(e) { isDrawing = true; const rect = canvas.getBoundingClientRect(); lastX = e.clientX - rect.left; lastY = e.clientY - rect.top; }
+        function draw(e) { if (!isDrawing) return; const rect = canvas.getBoundingClientRect(); const currentX = e.clientX - rect.left; const currentY = e.clientY - rect.top; ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(currentX, currentY); ctx.stroke(); lastX = currentX; lastY = currentY; }
+        function handleTouchStart(e) { e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; lastX = touch.clientX - rect.left; lastY = touch.clientY - rect.top; isDrawing = true; }
+        function handleTouchMove(e) { if (!isDrawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; const currentX = touch.clientX - rect.left; const currentY = touch.clientY - rect.top; ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(currentX, currentY); ctx.stroke(); lastX = currentX; lastY = currentY; }
+        function stopDrawing() { isDrawing = false; }
+        function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+        function setDrawColor(color) { drawColor = color; ctx.strokeStyle = drawColor; document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); }
 
-        function draw(e) {
-            if (!isDrawing) return;
-            
-            const rect = canvas.getBoundingClientRect();
-            const currentX = e.clientX - rect.left;
-            const currentY = e.clientY - rect.top;
-            
-            ctx.strokeStyle = drawColor;
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(currentX, currentY);
-            ctx.stroke();
-            
-            lastX = currentX;
-            lastY = currentY;
-        }
-
-        function handleTouchStart(e) {
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const touch = e.touches[0];
-            lastX = touch.clientX - rect.left;
-            lastY = touch.clientY - rect.top;
-            isDrawing = true;
-        }
-
-        function handleTouchMove(e) {
-            if (!isDrawing) return;
-            e.preventDefault();
-            
-            const rect = canvas.getBoundingClientRect();
-            const touch = e.touches[0];
-            const currentX = touch.clientX - rect.left;
-            const currentY = touch.clientY - rect.top;
-            
-            ctx.strokeStyle = drawColor;
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(currentX, currentY);
-            ctx.stroke();
-            
-            lastX = currentX;
-            lastY = currentY;
-        }
-
-        function stopDrawing() {
-            isDrawing = false;
-        }
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
-        function setDrawColor(color) {
-            drawColor = color;
-            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // UI 제어 (난이도 버튼 위치 이동 포함)
+        /* --- [게임 UI 및 로직] --- */
         function toggleOptions(m) { 
             mode = m; 
-            
             const levelBox = document.getElementById('speed-levels');
             const speedOps = document.getElementById('speed-ops');
             const wordLabel = document.getElementById('label-word');
 
-            // 1. 연산 선택 박스 표시 여부 (스피드 모드일 때만)
             speedOps.style.display = (m === 'speed') ? 'flex' : 'none';
-            
-            // 2. 난이도 박스 표시 및 위치 이동 로직
             if (m === 'speed' || m === 'word') {
                 levelBox.style.display = 'flex';
-                
-                if (m === 'speed') {
-                    // 스피드 모드: 연산 버튼 아래로 이동
-                    speedOps.after(levelBox);
-                    levelBox.classList.remove('word-mode');
-                } else {
-                    // 서술형 모드: 서술형 라벨 아래로 이동
-                    wordLabel.after(levelBox);
-                    levelBox.classList.add('word-mode');
-                }
+                if (m === 'speed') { speedOps.after(levelBox); levelBox.classList.remove('word-mode'); } 
+                else { wordLabel.after(levelBox); levelBox.classList.add('word-mode'); }
             } else {
                 levelBox.style.display = 'none';
             }
         }
 
-        function setLevel(lv) { 
-            difficulty = lv; 
-            document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('selected')); 
-            document.getElementById('lv' + lv).classList.add('selected'); 
-        }
-        function setOpType(type) {
-            speedOpType = type;
-            document.querySelectorAll('.op-btn').forEach(b => b.classList.remove('selected'));
-            let btnId = type === '+' ? 'op-plus' : (type === '-' ? 'op-minus' : (type === '*' ? 'op-mul' : (type === '/' ? 'op-div' : 'op-rand')));
-            document.getElementById(btnId).classList.add('selected');
-        }
-        
-        // 입력 모드 설정 함수 (순차/역순 버튼 클릭 시)
-        function setInputMode(dir) {
-            inputDirection = dir;
-            
-            // 버튼 스타일 업데이트
-            const normalBtn = document.getElementById('btn-mode-normal');
-            const reverseBtn = document.getElementById('btn-mode-reverse');
-            
-            if (dir === 'normal') {
-                normalBtn.classList.add('active');
-                reverseBtn.classList.remove('active');
-            } else {
-                normalBtn.classList.remove('active');
-                reverseBtn.classList.add('active');
-            }
-        }
+        function setLevel(lv) { difficulty = lv; document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('selected')); document.getElementById('lv' + lv).classList.add('selected'); }
+        function setOpType(type) { speedOpType = type; document.querySelectorAll('.op-btn').forEach(b => b.classList.remove('selected')); let btnId = type === '+' ? 'op-plus' : (type === '-' ? 'op-minus' : (type === '*' ? 'op-mul' : (type === '/' ? 'op-div' : 'op-rand'))); document.getElementById(btnId).classList.add('selected'); }
+        function setInputMode(dir) { inputDirection = dir; const normalBtn = document.getElementById('btn-mode-normal'); const reverseBtn = document.getElementById('btn-mode-reverse'); if (dir === 'normal') { normalBtn.classList.add('active'); reverseBtn.classList.remove('active'); } else { normalBtn.classList.remove('active'); reverseBtn.classList.add('active'); } }
 
-        // 사용자 관리
+        // 사용자 관리 로직
         function openUserModal() { renderUserList(); document.getElementById('modal-login').classList.remove('hidden'); }
         function closeUserModal() { document.getElementById('modal-login').classList.add('hidden'); }
-
         function renderUserList() {
-            const list = document.getElementById('user-list');
-            list.innerHTML = '';
+            const list = document.getElementById('user-list'); list.innerHTML = '';
             const db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
             const names = Object.keys(db);
-
             const guestDiv = document.createElement('div');
             guestDiv.className = `user-item ${currentUser === null ? 'active' : ''}`;
             guestDiv.innerHTML = `<span style="font-weight:bold;">Guest Player</span>`;
             guestDiv.onclick = () => selectUser(null);
             list.appendChild(guestDiv);
-
             names.forEach(name => {
                 const div = document.createElement('div');
                 div.className = `user-item ${currentUser && currentUser.name === name ? 'active' : ''}`;
@@ -811,7 +679,6 @@
                 list.appendChild(div);
             });
         }
-
         function registerNewUser() {
             const nm = document.getElementById('inp-name').value.trim();
             if(!nm) return;
@@ -822,7 +689,6 @@
             document.getElementById('inp-name').value = '';
             renderUserList();
         }
-
         function deleteUser(name, e) {
             e.stopPropagation();
             if(!confirm(`'${name}' 사용자를 삭제하시겠습니까?`)) return;
@@ -832,171 +698,95 @@
             if(currentUser && currentUser.name === name) selectUser(null);
             renderUserList();
         }
-
         function selectUser(name) {
             if(name === null) {
                 currentUser = null;
                 document.getElementById('display-user').innerText = "Guest Player";
                 document.getElementById('display-user').style.color = "white";
+                localStorage.removeItem('mm_last_user');
             } else {
                 let db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
                 currentUser = { name: name, data: db[name] };
                 document.getElementById('display-user').innerText = name;
                 document.getElementById('display-user').style.color = "var(--accent-cyan)";
+                localStorage.setItem('mm_last_user', name);
             }
             closeUserModal();
         }
 
-        // Firebase 피드백 관리
-        function openFeedbackModal() {
-            document.getElementById('modal-feedback').classList.remove('hidden');
-            loadFeedbacks();
-        }
-
-        function closeFeedbackModal() {
-            document.getElementById('modal-feedback').classList.add('hidden');
-        }
-
+        // Firebase 피드백 로직
+        function openFeedbackModal() { document.getElementById('modal-feedback').classList.remove('hidden'); loadFeedbacks(); }
+        function closeFeedbackModal() { document.getElementById('modal-feedback').classList.add('hidden'); }
         async function loadFeedbacks() {
             const list = document.getElementById('feedback-list');
             list.innerHTML = '<div class="loading">피드백을 불러오는 중...</div>';
-
             try {
                 const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/feedbacks?orderBy=createdAt desc&pageSize=20`;
                 const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error('Failed to load feedbacks');
-                }
-
+                if (!response.ok) throw new Error('Failed');
                 const data = await response.json();
-                
-                if (!data.documents || data.documents.length === 0) {
-                    list.innerHTML = '<div class="loading">아직 작성된 피드백이 없습니다.</div>';
-                    return;
-                }
-
+                if (!data.documents || data.documents.length === 0) { list.innerHTML = '<div class="loading">피드백이 없습니다.</div>'; return; }
                 list.innerHTML = '';
                 data.documents.forEach(doc => {
                     const author = doc.fields.author?.stringValue || '익명';
                     const content = doc.fields.content?.stringValue || '';
-                    const timestamp = doc.fields.createdAt?.timestampValue || new Date().toISOString();
-                    
-                    const date = new Date(timestamp);
+                    const date = new Date(doc.fields.createdAt?.timestampValue);
                     const dateStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
-                    
                     const div = document.createElement('div');
                     div.className = 'feedback-item';
-                    div.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span class="feedback-author">${author}</span>
-                            <span class="feedback-date">${dateStr}</span>
-                        </div>
-                        <div class="feedback-body">${content.replace(/\n/g, '<br>')}</div>
-                    `;
+                    div.innerHTML = `<div style="display:flex; justify-content:space-between;"><span class="feedback-author">${author}</span><span class="feedback-date">${dateStr}</span></div><div class="feedback-body">${content.replace(/\n/g, '<br>')}</div>`;
                     list.appendChild(div);
                 });
-            } catch (error) {
-                console.error('Error loading feedbacks:', error);
-                list.innerHTML = '<div class="loading" style="color:#ff3b30;">피드백을 불러올 수 없습니다.<br>Firebase 설정을 확인해주세요.</div>';
-            }
+            } catch (error) { list.innerHTML = '<div class="loading" style="color:#ff3b30;">피드백 로드 실패</div>'; }
         }
-
         async function submitFeedback() {
             const name = document.getElementById('feedback-name').value.trim() || '익명';
             const text = document.getElementById('feedback-text').value.trim();
-
-            if (!text) {
-                alert('피드백 내용을 입력해주세요!');
-                return;
-            }
-
+            if (!text) { alert('내용을 입력해주세요!'); return; }
             try {
-                const feedbackData = {
-                    fields: {
-                        author: { stringValue: name },
-                        content: { stringValue: text },
-                        createdAt: { timestampValue: new Date().toISOString() }
-                    }
-                };
-
                 const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/feedbacks`;
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(feedbackData)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to submit feedback');
-                }
-
-                alert('피드백이 등록되었습니다! 감사합니다 😊');
-                document.getElementById('feedback-name').value = '';
+                await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ fields: { author: { stringValue: name }, content: { stringValue: text }, createdAt: { timestampValue: new Date().toISOString() } } }) });
+                alert('등록되었습니다!');
                 document.getElementById('feedback-text').value = '';
                 loadFeedbacks();
-            } catch (error) {
-                console.error('Error submitting feedback:', error);
-                alert('피드백 등록에 실패했습니다.\nFirebase 설정을 확인해주세요.');
-            }
+            } catch (error) { alert('등록 실패'); }
         }
 
+        // 게임 제어
         function goHome() { if(confirm("게임을 종료하고 홈으로 돌아가시겠습니까?")) location.reload(); }
-
         function restartSameLevel() {
             document.getElementById('screen-result').classList.add('hidden');
             document.getElementById('screen-game').classList.remove('hidden');
-            history = []; 
-            qNum = 1;
-            
-            const sketchContainer = document.getElementById('sketch-container');
-            if(mode === 'speed' || mode === 'word') {
-                sketchContainer.classList.add('show');
-                if(!canvas) initCanvas();
-                clearCanvas();
-            } else {
-                sketchContainer.classList.remove('show');
-            }
-            
-            nextQ();
+            history = []; qNum = 1; nextQ();
         }
 
         function startGame() {
             document.getElementById('screen-start').classList.add('hidden');
             document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('tool-container').style.display = 'block';
             history = []; qNum = 1;
             
-            const sketchContainer = document.getElementById('sketch-container');
-            if(mode === 'speed' || mode === 'word') {
-                sketchContainer.classList.add('show');
-                initCanvas();
-                clearCanvas();
-            } else {
-                sketchContainer.classList.remove('show');
-            }
-            
+            setTimeout(() => {
+                const canvas = document.getElementById('sketch-canvas');
+                canvas.width = canvas.parentElement.clientWidth - 20;
+                canvas.height = 200;
+                ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 3; ctx.strokeStyle = drawColor;
+            }, 100);
+
             nextQ();
         }
 
         function nextQ() {
             if(qNum > totalQ) { finish(); return; }
-            
             isProcessing = false;
             document.getElementById('q-curr').innerText = qNum;
             document.getElementById('msg-box').innerText = '';
             
-            if((mode === 'speed' || mode === 'word') && ctx) {
-                clearCanvas();
-            }
+            clearTool();
             
-            if (mode === 'word') {
-                genWordProb();
-            } else {
-                genProb();
-            }
+            if (mode === 'word') genWordProb();
+            else if (mode === 'step') genStepProb();
+            else genProb();
             
             clearInterval(timerInt);
             document.getElementById('timer').innerText = "0.0";
@@ -1007,112 +797,63 @@
         function rand(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
 
         function genWordProb() {
-            // 서술형 문제 생성
             const ops = ['+','-','*','/'];
-            // 난이도별 연산 가중치 조절 가능 (현재는 랜덤)
             let chosenOp;
-            
-            // Lv 1, 2는 +, - 위주 / Lv 3, 4는 곱셈 나눗셈 섞어서
-            if (difficulty <= 2) {
-                chosenOp = Math.random() < 0.8 ? ops[Math.floor(Math.random()*2)] : ops[2]; // 80% 확률로 +,-
-            } else {
-                chosenOp = ops[Math.floor(Math.random()*ops.length)];
-            }
+            if (difficulty <= 2) chosenOp = Math.random() < 0.8 ? ops[Math.floor(Math.random()*2)] : ops[2];
+            else chosenOp = ops[Math.floor(Math.random()*ops.length)];
 
             let min, max;
             if(difficulty === 1) { min=2; max=15; }
             else if(difficulty === 2) { min=10; max=50; }
             else if(difficulty === 3) { min=50; max=500; }
-            else { min=500; max=9000; } // Lv.4
+            else { min=500; max=9000; }
 
-            const nIdx = Math.floor(Math.random() * wordNames.length);
-            const name1 = wordNames[nIdx];
-            const name2 = wordNames[(nIdx + 1) % wordNames.length];
-            
-            const iIdx = Math.floor(Math.random() * wordItems.length);
-            const item = wordItems[iIdx];
-            const unit = wordUnits[iIdx];
+            const name1 = wordNames[Math.floor(Math.random() * wordNames.length)];
+            const name2 = wordNames[Math.floor(Math.random() * wordNames.length)];
+            const item = wordItems[Math.floor(Math.random() * wordItems.length)];
+            const unit = wordUnits[0];
 
             if (chosenOp === '+') {
-                num1 = rand(min, max);
-                num2 = rand(min, max);
-                ans = num1 + num2;
-                currentWordProblem = `${name1}는 ${item}을 ${num1}${unit} 가지고 있습니다. ${name2}가 ${item}을 ${num2}${unit} 더 주었습니다. ${name1}가 가진 ${item}은 모두 몇 ${unit}인가요?`;
-                op = '+';
+                num1 = rand(min, max); num2 = rand(min, max); ans = num1 + num2;
+                currentWordProblem = `${name1}는 ${item}을 ${num1}${unit} 가지고 있습니다. ${name2}가 ${item}을 ${num2}${unit} 더 주었습니다. ${name1}가 가진 ${item}은 모두 몇 ${unit}인가요?`; op = '+';
             } else if (chosenOp === '-') {
-                num1 = rand(min, max);
-                num2 = rand(Math.floor(min/2), num1); // 빼는 수는 더 작게
-                ans = num1 - num2;
-                currentWordProblem = `${name1}는 ${item}을 ${num1}${unit} 가지고 있었습니다. 그 중 ${num2}${unit}를 친구에게 주었습니다. 남은 ${item}은 몇 ${unit}인가요?`;
-                op = '-';
+                num1 = rand(min, max); num2 = rand(Math.floor(min/2), num1); ans = num1 - num2;
+                currentWordProblem = `${name1}는 ${item}을 ${num1}${unit} 가지고 있었습니다. 그 중 ${num2}${unit}를 친구에게 주었습니다. 남은 ${item}은 몇 ${unit}인가요?`; op = '-';
             } else if (chosenOp === '*') {
-                let m1, m2;
-                if(difficulty === 1) { m1 = rand(2,9); m2 = rand(2,9); }
-                else if(difficulty === 2) { m1 = rand(10,20); m2 = rand(2,9); }
-                else if(difficulty === 3) { m1 = rand(20,99); m2 = rand(2,9); }
-                else { m1 = rand(100,500); m2 = rand(10,50); } // Lv.4
-                num1 = m1; num2 = m2;
-                ans = num1 * num2;
-                currentWordProblem = `${item}이 한 상자에 ${num1}${unit}씩 들어있습니다. ${num2}상자에 들어있는 ${item}은 모두 몇 ${unit}인가요?`;
-                op = '×';
-            } else { // Division
-                let d1, d2;
-                if(difficulty === 1) { d2 = rand(2,5); d1 = d2 * rand(2,5); }
-                else if(difficulty === 2) { d2 = rand(2,9); d1 = d2 * rand(5,15); }
-                else if(difficulty === 3) { d2 = rand(5,20); d1 = d2 * rand(10,50); }
-                else { d2 = rand(10,99); d1 = d2 * rand(20,100); } // Lv.4
-                num1 = d1; num2 = d2;
-                ans = num1 / num2;
-                currentWordProblem = `${item} ${num1}${unit}를 ${num2}명의 학생에게 똑같이 나누어 주려고 합니다. 한 명당 몇 ${unit}씩 가질 수 있나요?`;
-                op = '÷';
+                let m1 = (difficulty===1)?rand(2,9):(difficulty===2?rand(10,20):(difficulty===3?rand(20,99):rand(100,500))); 
+                let m2 = (difficulty===4)?rand(10,50):rand(2,9);
+                num1 = m1; num2 = m2; ans = num1 * num2;
+                currentWordProblem = `${item}이 한 상자에 ${num1}${unit}씩 들어있습니다. ${num2}상자에 들어있는 ${item}은 모두 몇 ${unit}인가요?`; op = '×';
+            } else {
+                let d2, d1;
+                if(difficulty===1) { d2=rand(2,5); d1=d2*rand(2,5); }
+                else if(difficulty===2) { d2=rand(2,9); d1=d2*rand(5,15); }
+                else if(difficulty===3) { d2=rand(5,20); d1=d2*rand(10,50); }
+                else { d2=rand(10,99); d1=d2*rand(20,100); }
+                num1 = d1; num2 = d2; ans = num1 / num2;
+                currentWordProblem = `${item} ${num1}${unit}를 ${num2}명에게 똑같이 나누어 주려고 합니다. 한 명당 몇 ${unit}씩 가질 수 있나요?`; op = '÷';
             }
-
             renderUI();
         }
 
         function genProb() {
-            const sInputArea = document.getElementById('speed-input-container');
-            
-            if(mode === 'speed') {
-                if(speedOpType === 'random') {
-                    const ops = ['+','-','*','/'];
-                    op = ops[Math.floor(Math.random()*ops.length)];
-                } else { op = speedOpType; }
+            if(speedOpType === 'random') { const ops = ['+','-','*','/']; op = ops[Math.floor(Math.random()*ops.length)]; } else { op = speedOpType; }
+            let min=1, max=9;
+            if(difficulty === 2) { min=10; max=99; } if(difficulty === 3) { min=10; max=99; } if(difficulty === 4) { min=100; max=999; }
 
-                let min=1, max=9;
-                if(difficulty === 2) { min=10; max=99; }
-                if(difficulty === 3) { min=10; max=99; }
-                if(difficulty === 4) { min=100; max=999; }
+            if(op === '+') { num1 = rand(min, max); num2 = rand(min, max); ans = num1 + num2; } 
+            else if(op === '-') { num1 = rand(min, max); num2 = rand(min, max); if(num1 < num2) [num1, num2] = [num2, num1]; ans = num1 - num2; } 
+            else if(op === '*') { num1 = (difficulty===1)?rand(2,9):(difficulty===2?rand(10,99):(difficulty===3?rand(10,99):rand(100,999))); num2 = rand(2,9); ans = num1 * num2; } 
+            else { num2 = rand(2, 9); ans = rand(2, difficulty*5); num1 = ans * num2; }
+            renderUI();
+        }
 
-                if(op === '+') { 
-                    num1 = rand(min, max); 
-                    num2 = rand(min, max); 
-                    ans = num1 + num2; 
-                } 
-                else if(op === '-') { 
-                    num1 = rand(min, max); 
-                    num2 = rand(min, max); 
-                    if(num1 < num2) [num1, num2] = [num2, num1]; 
-                    ans = num1 - num2; 
-                } 
-                else if(op === '*') { 
-                    if(difficulty === 1) { num1 = rand(2,9); num2 = rand(2,9); }
-                    else if(difficulty === 2) { num1 = rand(10,99); num2 = rand(2,9); }
-                    else if(difficulty === 3) { num1 = rand(10,99); num2 = rand(10,99); }
-                    else { num1 = rand(100,999); num2 = rand(2,9); }
-                    ans = num1 * num2; 
-                } 
-                else { 
-                    num2 = rand(2, 9); 
-                    ans = rand(2, difficulty*5); 
-                    num1 = ans * num2; 
-                }
-            } else {
-                op = '*'; 
-                num1 = rand(100, 999); 
-                num2 = rand(2, 9); 
-                ans = num1 * num2;
-            }
+        // 단계별 문제 생성
+        function genStepProb() {
+            op = '*';
+            num1 = rand(100, 999);
+            num2 = rand(2, 9);
+            ans = num1 * num2;
             renderUI();
         }
 
@@ -1135,7 +876,7 @@
                 sInputArea.innerHTML = `<input id="ans-speed" class="final-input active" style="max-width:200px; height:60px; font-size:2.5rem;" readonly onclick="focusId('ans-speed')" placeholder="?">`;
                 activeId = 'ans-speed';
             }
-            else {
+            else { // Step mode UI
                 const s1 = String(num1);
                 let html = `<div class="v-grid">`;
                 html += `<div></div><div></div><div><div class="carry-circle" id="c1" onclick="focusId('c1')"></div></div><div><div class="carry-circle" id="c2" onclick="focusId('c2')"></div></div><div></div>`;
@@ -1160,67 +901,34 @@
         function focusId(id) {
             if(activeId) { 
                 const prev = document.getElementById(activeId); 
-                if(prev) { 
-                    prev.classList.remove('active'); 
-                    if(prev.classList.contains('carry-circle')) prev.style.background = 'transparent'; 
-                }
+                if(prev) { prev.classList.remove('active'); if(prev.classList.contains('carry-circle')) prev.style.background = 'transparent'; }
             }
             activeId = id; 
             const curr = document.getElementById(id); 
-            if(curr) { 
-                curr.classList.add('active'); 
-                if(curr.classList.contains('carry-circle')) curr.style.background = 'rgba(255,255,255,0.2)'; 
-            }
+            if(curr) { curr.classList.add('active'); if(curr.classList.contains('carry-circle')) curr.style.background = 'rgba(255,255,255,0.2)'; }
         }
 
         function inputKey(n) {
             if(!activeId || isProcessing) return;
             const el = document.getElementById(activeId);
             
-            // 입력 모드 로직 분기
             if(activeId === 'ans-speed' || activeId.startsWith('step')) { 
                 if(el.value.length < 8) {
-                    if(inputDirection === 'reverse') {
-                        // 기존 로직 (역순)
-                        el.value = n + el.value; 
-                    } else {
-                        // 순차 로직 (일반)
-                        el.value = el.value + n;
-                    }
+                    el.value = (inputDirection === 'reverse') ? (n + el.value) : (el.value + n);
                 }
             } 
-            else if(activeId.startsWith('c')) { 
-                el.innerText = n; 
-            } 
-            else { 
-                el.value = n; 
-            }
+            else if(activeId.startsWith('c')) { el.innerText = n; } 
+            else { el.value = n; }
         }
 
         function delKey() {
             if(!activeId || isProcessing) return;
             const el = document.getElementById(activeId);
-            
-            if(activeId === 'ans-speed') {
-                if(inputDirection === 'reverse') {
-                    el.value = el.value.slice(1);
-                } else {
-                    el.value = el.value.slice(0, -1);
-                }
+            if(activeId === 'ans-speed' || activeId.startsWith('step')) {
+                el.value = (inputDirection === 'reverse') ? el.value.slice(1) : el.value.slice(0, -1);
             }
-            else if(activeId.startsWith('step')) {
-                if(inputDirection === 'reverse') {
-                    el.value = el.value.slice(1);
-                } else {
-                    el.value = el.value.slice(0, -1);
-                }
-            }
-            else if(activeId.startsWith('c')) {
-                el.innerText = ''; 
-            }
-            else {
-                el.value = '';
-            }
+            else if(activeId.startsWith('c')) { el.innerText = ''; }
+            else { el.value = ''; }
         }
 
         function submitAns() {
@@ -1234,15 +942,10 @@
             }
             
             let uVal;
-            if(mode === 'speed' || mode === 'word') { 
-                uVal = parseInt(document.getElementById('ans-speed').value); 
-            } 
+            if(mode === 'speed' || mode === 'word') { uVal = parseInt(document.getElementById('ans-speed').value); } 
             else { 
                 let s = ""; 
-                for(let i=0; i<5; i++) { 
-                    const e = document.getElementById(`ans-${i}`); 
-                    if(e) s += e.value; 
-                } 
+                for(let i=0; i<5; i++) { const e = document.getElementById(`ans-${i}`); if(e) s += e.value; } 
                 uVal = parseInt(s); 
             }
 
@@ -1250,34 +953,17 @@
 
             isProcessing = true;
             clearInterval(timerInt);
-
             const elapsedTime = (Date.now() - startTime) / 1000;
             const ok = (uVal === ans);
             
-            // 히스토리 저장 (서술형은 문제 텍스트를 요약해서 저장)
-            let qText = "";
-            if (mode === 'word') {
-                qText = `${num1} ${op} ${num2} (서술형)`;
-            } else {
-                qText = `${num1} ${op} ${num2}`;
-            }
-
-            history.push({ 
-                q: qText, 
-                a: ans, 
-                u: uVal, 
-                ok: ok,
-                time: elapsedTime
-            });
+            let qText = (mode === 'word') ? `${num1} ${op} ${num2} (서술형)` : `${num1} ${op} ${num2}`;
+            history.push({ q: qText, a: ans, u: uVal, ok: ok, time: elapsedTime });
 
             if(ok) { 
-                document.getElementById('msg-box').innerText = "정답!";
-                document.getElementById('msg-box').style.color = "#00ff88"; 
+                document.getElementById('msg-box').innerText = "정답!"; document.getElementById('msg-box').style.color = "#00ff88"; 
                 setTimeout(()=>{ qNum++; nextQ(); }, 600); 
-            } 
-            else { 
-                document.getElementById('msg-box').innerText = `틀렸어요! 정답: ${ans}`;
-                document.getElementById('msg-box').style.color = "#ff3b30"; 
+            } else { 
+                document.getElementById('msg-box').innerText = `틀렸어요! 정답: ${ans}`; document.getElementById('msg-box').style.color = "#ff3b30"; 
                 setTimeout(()=>{ qNum++; nextQ(); }, 1200); 
             }
         }
@@ -1292,85 +978,38 @@
             
             const username = currentUser ? currentUser.name : 'Guest Player';
             document.getElementById('result-username').innerText = username;
-            
-            let modeText = '';
-            if (mode === 'speed') modeText = '⚡ 스피드 모드';
-            else if (mode === 'word') modeText = '📚 서술형 문제';
-            else modeText = '🐢 곱셈 단계별';
-
-            let opText = '';
-            if(mode === 'speed') {
-                if(speedOpType === 'random') opText = ' • 랜덤';
-                else if(speedOpType === '+') opText = ' • 덧셈';
-                else if(speedOpType === '-') opText = ' • 뺄셈';
-                else if(speedOpType === '*') opText = ' • 곱셈';
-                else if(speedOpType === '/') opText = ' • 나눗셈';
-            }
-            
-            document.getElementById('result-mode-info').innerText = `${modeText}${opText} • Lv.${difficulty}`;
+            document.getElementById('result-mode-info').innerText = `${mode} Mode • Lv.${difficulty}`;
             
             const totalTime = history.reduce((sum, h) => sum + h.time, 0);
             const avgTime = (totalTime / history.length).toFixed(1);
-            const fastestTime = Math.min(...history.map(h => h.time)).toFixed(1);
             const accuracyRate = ((correct / totalQ) * 100).toFixed(0);
             
             document.getElementById('accuracy-rate').innerText = accuracyRate + '%';
             document.getElementById('avg-solve-time').innerText = avgTime + '초';
-            document.getElementById('fastest-time').innerText = fastestTime + '초';
             
-            const tbody = document.getElementById('res-tbody'); 
-            tbody.innerHTML = '';
-            
+            const tbody = document.getElementById('res-tbody'); tbody.innerHTML = '';
             history.forEach((h, i) => {
-                let qStr = h.q.replace('*','×').replace('/','÷');
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${i+1}</td>
-                        <td>${qStr}</td>
-                        <td>${h.ok ? `<span class="correct-ans">${h.a}</span>` : `<span class="wrong-ans">${h.u}</span> / ${h.a}`}</td>
-                        <td style="color:#888">${h.time.toFixed(1)}초</td>
-                        <td style="color:${h.ok?'var(--accent-cyan)':'#ff3b30'}">${h.ok?'O':'X'}</td>
-                    </tr>`;
+                tbody.innerHTML += `<tr><td>${i+1}</td><td>${h.q.replace('*','×').replace('/','÷')}</td><td>${h.ok ? `<span class="correct-ans">${h.a}</span>` : `<span class="wrong-ans">${h.u}</span> / ${h.a}`}</td><td style="color:${h.ok?'var(--accent-cyan)':'#ff3b30'}">${h.ok?'O':'X'}</td></tr>`;
             });
 
             if(currentUser) {
                 let db = JSON.parse(localStorage.getItem('mm_v24_db') || '{}');
                 if(!db[currentUser.name]) db[currentUser.name] = { games: 0, time: 0 };
-                
                 db[currentUser.name].games++;
                 db[currentUser.name].time += totalTime;
-                
                 localStorage.setItem('mm_v24_db', JSON.stringify(db));
-                
-                document.getElementById('total-plays').innerText = db[currentUser.name].games + '회';
-            } else {
-                document.getElementById('total-plays').innerText = '1회';
             }
         }
-
+        
+        // 키보드 이벤트
         document.addEventListener('keydown', (e) => {
-            const gameScreen = document.getElementById('screen-game');
-            if(gameScreen.classList.contains('hidden')) return;
-            
-            if(e.key >= '0' && e.key <= '9') {
-                e.preventDefault();
-                inputKey(parseInt(e.key));
-            }
-            else if(e.key === 'Enter') {
-                e.preventDefault();
-                submitAns();
-            }
-            else if(e.key === 'Backspace' || e.key === 'Delete') {
-                e.preventDefault();
-                delKey();
-            }
+            if(document.getElementById('screen-game').classList.contains('hidden')) return;
+            if(e.key >= '0' && e.key <= '9') { e.preventDefault(); inputKey(parseInt(e.key)); }
+            else if(e.key === 'Enter') { e.preventDefault(); submitAns(); }
+            else if(e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); delKey(); }
         });
-
         document.getElementById('inp-name').addEventListener('keydown', (e) => {
-            if(e.key === 'Enter') {
-                e.preventDefault();
-                registerNewUser();
-            }
+            if(e.key === 'Enter') { e.preventDefault(); registerNewUser(); }
         });
     </script>
 </body>
